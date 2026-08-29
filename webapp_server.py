@@ -1,25 +1,5 @@
 # =====================================================================
-# webapp_server.py  —  ملف واحد مستقل: يقدّم صفحة الـ Web App + الـ API معًا
-# =====================================================================
-# لا يستورد ولا يعدّل ملف البوت الأصلي (نسخة_56_.py) إطلاقًا.
-# يُرفع على GitHub ويُشغَّل هو لوحده على استضافة منفصلة عن البوت:
-#
-#       python webapp_server.py
-#
-# يخدم:
-#   GET  /              → صفحة الـ Web App (HTML)
-#   GET  /webapp.html    → نفس الصفحة (رابط بديل)
-#   GET  /api/points     → رصيد المستخدم
-#   POST /api/withdraw   → تقديم طلب سحب
-#
-# كل قسم جديد لاحقًا (روليت/سحوبات/مسابقات) يُضاف داخل هذا الملف نفسه:
-# دالة جديدة + تسجيلها بدالة build_app() في الأسفل — بدون ملفات إضافية.
-#
-# التشغيل:
-#   pip install aiohttp firebase-admin
-#   export BOT_TOKEN="توكن_بوتك"
-#   export FIREBASE_PRIVATE_KEY="نفس القيمة المستخدمة مع البوت"
-#   python webapp_server.py
+# webapp_server.py  —  ملف السيرفر الخاص بـ Web App (API)
 # =====================================================================
 
 import hashlib
@@ -37,8 +17,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("vortex_webapp")
 
 # ---------------------------------------------------------------------
-# إعدادات — التوكن ومفتاح Firebase يُقرآن من متغيرات البيئة (بدون
-# تكرار الأسرار داخل الكود المرفوع على GitHub)
+# إعدادات التوكن ومفتاح Firebase من متغيرات البيئة
 # ---------------------------------------------------------------------
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 if not BOT_TOKEN:
@@ -80,7 +59,7 @@ DEFAULT_POINTS_CONDITIONS = (
 )
 
 # ---------------------------------------------------------------------
-# Firestore — نفس مشروع البوت بالضبط
+# الاتصال بالـ Firestore
 # ---------------------------------------------------------------------
 _FS_CLIENT = None
 
@@ -194,7 +173,8 @@ def verify_init_data(init_data: str) -> dict | None:
         return None
 
 
-WEBAPP_ALLOWED_ORIGIN = "https://SAMSAMYTFF33.github.io"  # ⚠️ عدّله لعنوان صفحتك الفعلي على GitHub Pages
+# يسمح بالطلب من صفحة GitHub Pages (سواء بحروف كبيرة أو صغيرة)
+WEBAPP_ALLOWED_ORIGIN = "*"
 
 
 def json_response(payload: dict, status: int = 200) -> web.Response:
@@ -209,9 +189,9 @@ async def handle_options(request: web.Request) -> web.Response:
     return json_response({})
 
 
-# =====================================================================
-# قسم "نقاطي" — أول قسم شغّال. الأقسام القادمة تُضاف هنا بنفس الملف.
-# =====================================================================
+# ---------------------------------------------------------------------
+# الـ Endpoints
+# ---------------------------------------------------------------------
 
 async def handle_points(request: web.Request) -> web.Response:
     init_data = request.query.get("initData", "")
@@ -275,24 +255,16 @@ async def handle_withdraw(request: web.Request) -> web.Response:
     return json_response({"ok": True, "request_id": request_id, "points_amount": pts})
 
 
-# =====================================================================
-# نقطة تشغيل السيرفر — API فقط (index.html أصبح ملفًا منفصلًا يُستضاف
-# على GitHub Pages، لأن GitHub لا يشغّل بايثون)
-# =====================================================================
-
 def build_app() -> web.Application:
     app = web.Application()
     app.router.add_get("/api/points", handle_points)
     app.router.add_post("/api/withdraw", handle_withdraw)
     app.router.add_route("OPTIONS", "/api/points", handle_options)
     app.router.add_route("OPTIONS", "/api/withdraw", handle_options)
-    # قسم جديد لاحقًا؟ أضف هنا فقط سطرين، مثل:
-    # app.router.add_get("/api/roulette", handle_roulette)
-    # app.router.add_post("/api/roulette/join", handle_roulette_join)
     return app
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8081"))
-    logger.info(f"Web App (صفحة + API) يعمل الآن على المنفذ {port}")
+    logger.info(f"Web App (API) يعمل على المنفذ {port}")
     web.run_app(build_app(), host="0.0.0.0", port=port)
