@@ -3,150 +3,399 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>VORTEX — نقاطي</title>
+<title>VORTEX</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
-    --bg: var(--tg-theme-bg-color, #0e0e12);
-    --text: var(--tg-theme-text-color, #ffffff);
-    --hint: var(--tg-theme-hint-color, #8a8a92);
-    --btn: var(--tg-theme-button-color, #7c5cff);
-    --btn-text: var(--tg-theme-button-text-color, #ffffff);
-    --card: var(--tg-theme-secondary-bg-color, #1a1a22);
+    --bg: #0b0b12;
+    --bg2: #101018;
+    --text: #f5f5f9;
+    --hint: #8d8d9c;
+    --accent: #7c5cff;
+    --accent2: #ff5ca8;
+    --accent-text: #ffffff;
+    --card: #16161f;
+    --card-border: rgba(255,255,255,0.06);
+    --gold: #ffc94a;
+    --green: #3ddc84;
+    --red: #ff5c5c;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, "Segoe UI", Tahoma, sans-serif; background: var(--bg); color: var(--text); padding: 16px; }
-  .brand { text-align: center; font-size: 15px; letter-spacing: 1px; color: var(--hint); margin-bottom: 18px; }
-  .card { background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 14px; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif;
+    background: radial-gradient(circle at 50% 0%, #1a1330 0%, var(--bg) 55%);
+    color: var(--text);
+  }
+  body { padding: 16px 14px 90px; min-height: 100vh; }
+  ::-webkit-scrollbar { display: none; }
+
+  .brand {
+    text-align: center; font-size: 13px; letter-spacing: 3px;
+    color: var(--hint); margin-bottom: 16px; text-transform: uppercase;
+  }
+  .brand b {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-size: 15px; letter-spacing: 4px;
+  }
+
+  .card {
+    background: linear-gradient(180deg, var(--card), #121219);
+    border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 18px; margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    animation: fadeIn .35s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none; } }
+
   .balance-label { color: var(--hint); font-size: 13px; margin-bottom: 6px; }
-  .balance-value { font-size: 38px; font-weight: 700; }
-  .progress-wrap { margin-top: 14px; }
-  .progress-bar-bg { background: rgba(255,255,255,0.08); border-radius: 10px; height: 10px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: var(--btn); border-radius: 10px; transition: width .4s ease; }
-  .progress-text { color: var(--hint); font-size: 12px; margin-top: 6px; }
+  .balance-value { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+  .balance-value span.unit { font-size: 16px; color: var(--hint); font-weight: 600; margin-right: 6px; }
+
+  .progress-wrap { margin-top: 16px; }
+  .progress-bar-bg { background: rgba(255,255,255,0.07); border-radius: 12px; height: 12px; overflow: hidden; }
+  .progress-bar-fill {
+    height: 100%; border-radius: 12px; transition: width .5s cubic-bezier(.4,0,.2,1);
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .progress-text { color: var(--hint); font-size: 12px; margin-top: 8px; }
+
   .conditions { font-size: 13px; color: var(--hint); line-height: 1.9; white-space: pre-wrap; }
-  .status-pill { display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 20px; margin-top: 8px; }
-  .status-pending { background: rgba(255,193,7,0.15); color: #ffc107; }
-  .status-done { background: rgba(76,175,80,0.15); color: #4caf50; }
-  button.action { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; background: var(--btn); color: var(--btn-text); margin-top: 4px; }
-  button.action:disabled { opacity: .5; }
+  .card-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+
+  .status-pill { display: inline-block; font-size: 12px; padding: 5px 12px; border-radius: 20px; font-weight: 600; }
+  .status-pending { background: rgba(255,201,74,0.15); color: var(--gold); }
+  .status-done { background: rgba(61,220,132,0.15); color: var(--green); }
+  .status-open { background: rgba(61,220,132,0.15); color: var(--green); }
+  .status-closed { background: rgba(255,92,92,0.15); color: var(--red); }
+
+  button.action {
+    width: 100%; padding: 15px; border: none; border-radius: 16px; font-size: 15px;
+    font-weight: 700; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: var(--accent-text); margin-top: 6px; transition: transform .15s ease, opacity .15s ease;
+  }
+  button.action:active { transform: scale(.97); }
+  button.action:disabled { opacity: .4; }
+  button.action.secondary {
+    background: rgba(255,255,255,0.06); color: var(--text);
+    border: 1px solid var(--card-border);
+  }
+  button.action.danger { background: rgba(255,92,92,0.15); color: var(--red); }
+
   .msg { text-align: center; color: var(--hint); font-size: 13px; margin-top: 10px; min-height: 18px; }
-  .loading { text-align: center; color: var(--hint); padding: 40px 0; }
+  .loading { text-align: center; color: var(--hint); padding: 60px 0; }
+  .spinner {
+    width: 30px; height: 30px; margin: 0 auto 14px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Tab bar */
+  .tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex; background: rgba(16,16,24,0.92); backdrop-filter: blur(14px);
+    border-top: 1px solid var(--card-border); padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    gap: 6px; z-index: 50;
+  }
+  .tab-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none; color: var(--hint); font-size: 11px; font-weight: 600;
+    padding: 6px 0; border-radius: 12px; transition: color .15s ease;
+  }
+  .tab-btn .icon { font-size: 20px; line-height: 1; }
+  .tab-btn.active { color: var(--text); }
+  .tab-btn.active .icon { filter: drop-shadow(0 0 8px rgba(124,92,255,0.7)); }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Leaderboard */
+  .lb-row {
+    display: flex; align-items: center; gap: 10px; padding: 12px 4px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank {
+    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; background: rgba(255,255,255,0.06); color: var(--hint); flex-shrink: 0;
+  }
+  .lb-rank.gold { background: rgba(255,201,74,0.18); color: var(--gold); }
+  .lb-rank.silver { background: rgba(200,200,220,0.18); color: #d6d6e6; }
+  .lb-rank.bronze { background: rgba(205,127,50,0.2); color: #e0a466; }
+  .lb-name { flex: 1; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-name.me { color: var(--accent2); }
+  .lb-votes { font-size: 13px; color: var(--hint); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+  .vote-btn {
+    border: none; background: rgba(255,255,255,0.06); color: var(--text);
+    width: 38px; height: 38px; border-radius: 12px; font-size: 16px; flex-shrink: 0;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .vote-btn:active { transform: scale(.9); }
+  .vote-btn.voted { background: rgba(255,92,92,0.18); color: var(--red); }
+  .vote-btn:disabled { opacity: .35; }
+
+  .code-input-wrap { display: flex; gap: 8px; }
+  input.code-input {
+    flex: 1; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--card-border);
+    background: rgba(255,255,255,0.05); color: var(--text); font-size: 15px; text-align: center;
+    letter-spacing: 1px;
+  }
+  input.code-input::placeholder { color: var(--hint); }
+  button.mini-btn {
+    padding: 0 18px; border: none; border-radius: 14px; font-weight: 700; font-size: 14px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #fff;
+  }
+
+  .empty-hint { text-align: center; color: var(--hint); font-size: 13px; padding: 30px 10px; line-height: 1.8; }
+  .empty-hint .icon { font-size: 34px; display: block; margin-bottom: 10px; }
+
+  .roulette-ring-wrap { display: flex; justify-content: center; margin: 6px 0 16px; }
+  .roulette-ring { position: relative; width: 150px; height: 150px; }
+  .roulette-ring svg { transform: rotate(-90deg); }
+  .roulette-ring .bg-ring { stroke: rgba(255,255,255,0.07); }
+  .roulette-ring .fg-ring { stroke: url(#ringGrad); transition: stroke-dashoffset .6s ease; stroke-linecap: round; }
+  .roulette-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .roulette-center .num { font-size: 28px; font-weight: 800; }
+  .roulette-center .lbl { font-size: 11px; color: var(--hint); margin-top: 2px; }
+
+  .participant-chip {
+    display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border); border-radius: 20px; padding: 6px 12px; font-size: 12px; margin: 3px;
+  }
+  .chips-wrap { display: flex; flex-wrap: wrap; margin-top: 6px; }
 </style>
 </head>
 <body>
 
-<div class="brand">𝚁𝙾𝚄𝙻𝙴𝚃𝚃𝙴 𝚅𝙾𝚁𝚃𝙴𝚇 — نقاطي</div>
+<div class="brand"><b>𝚅𝙾𝚁𝚃𝙴𝚇</b></div>
 
-<div id="loading" class="loading">جارٍ تحميل رصيدك...</div>
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  جارٍ التحميل...
+</div>
 
-<div id="content" style="display:none">
-  <div class="card">
-    <div class="balance-label" id="titleLabel">رصيدك الحالي</div>
-    <div class="balance-value"><span id="pointsValue">0</span> نقطة</div>
-    <div class="progress-wrap" id="progressWrap">
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
-      <div class="progress-text" id="progressText"></div>
+<div id="app" style="display:none">
+
+  <!-- ===== صفحة النقاط ===== -->
+  <div class="page" id="page-points">
+    <div class="card">
+      <div class="balance-label" id="titleLabel">رصيدك الحالي</div>
+      <div class="balance-value"><span id="pointsValue">0</span><span class="unit">نقطة</span></div>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-text" id="progressText"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📌 الشروط</div>
+      <div class="conditions" id="conditionsText"></div>
+    </div>
+
+    <div class="card" id="requestCard" style="display:none">
+      <div class="card-title">آخر طلب سحب</div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div id="requestAmount" style="font-weight:700; font-size:15px;"></div>
+        <span class="status-pill" id="requestStatus"></span>
+      </div>
+    </div>
+
+    <button class="action" id="withdrawBtn">طلب السحب</button>
+    <div class="msg" id="pointsMsg"></div>
+  </div>
+
+  <!-- ===== صفحة المسابقة ===== -->
+  <div class="page" id="page-contest">
+    <div id="contestCodeCard" class="card" style="display:none">
+      <div class="card-title">🏁 أدخل كود المسابقة</div>
+      <div class="code-input-wrap">
+        <input class="code-input" id="contestCodeInput" placeholder="مثال: 12345678" inputmode="numeric">
+        <button class="mini-btn" id="contestCodeGo">فتح</button>
+      </div>
+    </div>
+
+    <div id="contestContent" style="display:none">
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <div class="card-title" id="contestTitle" style="margin-bottom:0;">🏁 المسابقة</div>
+          <span class="status-pill" id="contestStatusPill"></span>
+        </div>
+        <div class="progress-wrap" id="contestProgressWrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="contestProgressFill" style="width:0%"></div></div>
+          <div class="progress-text" id="contestProgressText"></div>
+        </div>
+      </div>
+
+      <div class="card" id="contestJoinCard">
+        <button class="action" id="contestJoinBtn">✅ سجّل مشاركتك</button>
+        <div class="msg" id="contestJoinMsg"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏆 لوحة الترتيب</div>
+        <div id="contestLeaderboard"></div>
+        <div class="empty-hint" id="contestEmptyHint" style="display:none">
+          <span class="icon">🙈</span>لا يوجد متسابقون بعد
+        </div>
+      </div>
+      <div class="msg" id="contestVoteMsg"></div>
+    </div>
+
+    <div class="empty-hint" id="contestErrHint" style="display:none">
+      <span class="icon">⚠️</span><span id="contestErrText">تعذّر تحميل المسابقة</span>
     </div>
   </div>
 
-  <div class="card">
-    <div class="conditions" id="conditionsText"></div>
+  <!-- ===== صفحة الروليت ===== -->
+  <div class="page" id="page-roulette">
+    <div id="rouletteCodeCard" class="card" style="display:none">
+      <div class="card-title">🔷 أدخل رقم الروليت</div>
+      <div class="code-input-wrap">
+        <input class="code-input" id="rouletteCodeInput" placeholder="مثال: 42" inputmode="numeric">
+        <button class="mini-btn" id="rouletteCodeGo">فتح</button>
+      </div>
+    </div>
+
+    <div id="rouletteContent" style="display:none">
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+          <div class="card-title" style="margin-bottom:0;">🔷 روليت VORTEX</div>
+          <span class="status-pill" id="rouletteStatusPill"></span>
+        </div>
+        <div class="roulette-ring-wrap">
+          <div class="roulette-ring">
+            <svg width="150" height="150">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#7c5cff"/>
+                  <stop offset="100%" stop-color="#ff5ca8"/>
+                </linearGradient>
+              </defs>
+              <circle class="bg-ring" cx="75" cy="75" r="64" fill="none" stroke-width="12"/>
+              <circle class="fg-ring" id="rouletteRing" cx="75" cy="75" r="64" fill="none" stroke-width="12"
+                      stroke-dasharray="402" stroke-dashoffset="402"/>
+            </svg>
+            <div class="roulette-center">
+              <div class="num" id="rouletteNum">0/0</div>
+              <div class="lbl">مشارك</div>
+            </div>
+          </div>
+        </div>
+        <button class="action" id="rouletteJoinBtn">🔶 اضغط لـ المشاركة 🔶</button>
+        <div class="msg" id="rouletteMsg"></div>
+      </div>
+
+      <div class="card" id="rouletteParticipantsCard" style="display:none">
+        <div class="card-title">👥 المشاركون</div>
+        <div class="chips-wrap" id="rouletteChips"></div>
+      </div>
+    </div>
+
+    <div class="empty-hint" id="rouletteErrHint" style="display:none">
+      <span class="icon">⚠️</span><span id="rouletteErrText">تعذّر تحميل الروليت</span>
+    </div>
   </div>
 
-  <div class="card" id="requestCard" style="display:none">
-    <div class="balance-label">آخر طلب سحب</div>
-    <div id="requestAmount"></div>
-    <span class="status-pill" id="requestStatus"></span>
-  </div>
+</div>
 
-  <button class="action" id="withdrawBtn">طلب السحب</button>
-  <div class="msg" id="msg"></div>
+<div class="tabbar" id="tabbar" style="display:none">
+  <button class="tab-btn" data-page="points"><span class="icon">💎</span>نقاطي</button>
+  <button class="tab-btn" data-page="contest"><span class="icon">🏁</span>المسابقة</button>
+  <button class="tab-btn" data-page="roulette"><span class="icon">🔷</span>الروليت</button>
 </div>
 
 <script>
-// تم التعديل إلى رابط السيرفر الخاص بك على Render
 const API_BASE = "https://project-2-i1bf.onrender.com";
 
 const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
+try { tg.setHeaderColor("#0b0b12"); tg.setBackgroundColor("#0b0b12"); } catch (e) {}
 
 const initData = tg.initData || "";
-const els = {
-  loading: document.getElementById("loading"),
-  content: document.getElementById("content"),
-  points: document.getElementById("pointsValue"),
-  title: document.getElementById("titleLabel"),
-  fill: document.getElementById("progressFill"),
-  progressText: document.getElementById("progressText"),
-  conditions: document.getElementById("conditionsText"),
-  requestCard: document.getElementById("requestCard"),
-  requestAmount: document.getElementById("requestAmount"),
-  requestStatus: document.getElementById("requestStatus"),
-  withdrawBtn: document.getElementById("withdrawBtn"),
-  msg: document.getElementById("msg"),
-};
+const startParam = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || "";
 
-let state = null;
+const $ = (id) => document.getElementById(id);
+const loadingEl = $("loading");
+const appEl = $("app");
+const tabbarEl = $("tabbar");
+
+function showApp() {
+  loadingEl.style.display = "none";
+  appEl.style.display = "block";
+  tabbarEl.style.display = "flex";
+}
+
+function switchTab(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  $("page-" + name).classList.add("active");
+  document.querySelector(`.tab-btn[data-page="${name}"]`).classList.add("active");
+  if (name === "contest" && !contestState.code) tryAutoLoadContest();
+  if (name === "roulette" && !rouletteState.id) tryAutoLoadRoulette();
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.page));
+});
+
+/* ============== نقاطي ============== */
+let pointsState = null;
 
 async function loadPoints() {
   try {
     const res = await fetch(`${API_BASE}/api/points?initData=${encodeURIComponent(initData)}`);
     const data = await res.json();
-    if (!res.ok) {
-      els.loading.textContent = data.error === "banned"
-        ? "🚫 تم حظرك من استخدام البوت."
-        : "تعذّر التحقق من هويتك. أعد فتح الصفحة من داخل البوت.";
-      return;
-    }
-    state = data;
-    render();
-  } catch (e) {
-    els.loading.textContent = "تعذّر الاتصال بالسيرفر. حاول لاحقًا.";
+    if (!res.ok) return;
+    pointsState = data;
+    renderPoints();
+  } catch (e) {}
+}
+
+function renderPoints() {
+  const s = pointsState;
+  if (!s) return;
+  $("titleLabel").textContent = s.title;
+  $("pointsValue").textContent = s.points;
+  $("conditionsText").textContent = s.conditions;
+
+  if (s.required > 0) {
+    const pct = Math.min(100, Math.round((s.points / s.required) * 100));
+    $("progressFill").style.width = pct + "%";
+    $("progressText").textContent = `${s.points} / ${s.required} نقطة للوصول للمكافأة`;
+  } else {
+    $("progressWrap").style.display = "none";
+  }
+
+  if (s.latest_request) {
+    $("requestCard").style.display = "block";
+    $("requestAmount").textContent = `💎 ${s.latest_request.points_amount} نقطة`;
+    const isPending = s.latest_request.status === "pending";
+    $("requestStatus").textContent = isPending ? "🟡 قيد الانتظار" : "🟢 مكتمل";
+    $("requestStatus").className = "status-pill " + (isPending ? "status-pending" : "status-done");
+  }
+
+  const btn = $("withdrawBtn");
+  if (s.pending) {
+    btn.textContent = "🟡 طلب السحب قيد الانتظار";
+    btn.disabled = true;
+  } else if (s.eligible) {
+    btn.textContent = `✅ سحب ${s.points} نقطة`;
+    btn.disabled = false;
+  } else {
+    btn.textContent = `🔒 سحب (${s.points}/${s.required})`;
+    btn.disabled = true;
   }
 }
 
-function render() {
-  els.loading.style.display = "none";
-  els.content.style.display = "block";
-
-  els.title.textContent = state.title;
-  els.points.textContent = state.points;
-  els.conditions.textContent = "📌 الشروط:\n" + state.conditions;
-
-  if (state.required > 0) {
-    const pct = Math.min(100, Math.round((state.points / state.required) * 100));
-    els.fill.style.width = pct + "%";
-    els.progressText.textContent = `${state.points} / ${state.required} نقطة للوصول للمكافأة`;
-  } else {
-    document.getElementById("progressWrap").style.display = "none";
-  }
-
-  if (state.latest_request) {
-    els.requestCard.style.display = "block";
-    els.requestAmount.textContent = `💎 ${state.latest_request.points_amount} نقطة`;
-    const isPending = state.latest_request.status === "pending";
-    els.requestStatus.textContent = isPending ? "🟡 قيد الانتظار" : "🟢 مكتمل";
-    els.requestStatus.className = "status-pill " + (isPending ? "status-pending" : "status-done");
-  }
-
-  if (state.pending) {
-    els.withdrawBtn.textContent = "🟡 طلب السحب قيد الانتظار";
-    els.withdrawBtn.disabled = true;
-  } else if (state.eligible) {
-    els.withdrawBtn.textContent = `✅ سحب ${state.points} نقطة`;
-    els.withdrawBtn.disabled = false;
-  } else {
-    els.withdrawBtn.textContent = `🔒 سحب (${state.points}/${state.required})`;
-    els.withdrawBtn.disabled = true;
-  }
-}
-
-els.withdrawBtn.addEventListener("click", async () => {
-  if (!state || !state.eligible) return;
-  els.withdrawBtn.disabled = true;
-  els.msg.textContent = "جارٍ إرسال الطلب...";
+$("withdrawBtn").addEventListener("click", async () => {
+  if (!pointsState || !pointsState.eligible) return;
+  $("withdrawBtn").disabled = true;
+  $("pointsMsg").textContent = "جارٍ إرسال الطلب...";
   try {
     const res = await fetch(`${API_BASE}/api/withdraw`, {
       method: "POST",
@@ -156,7 +405,7 @@ els.withdrawBtn.addEventListener("click", async () => {
     const data = await res.json();
     if (res.ok) {
       tg.HapticFeedback.notificationOccurred("success");
-      els.msg.textContent = "✅ تم إرسال طلب السحب بنجاح.";
+      $("pointsMsg").textContent = "✅ تم إرسال طلب السحب بنجاح.";
       await loadPoints();
     } else {
       const errors = {
@@ -165,16 +414,313 @@ els.withdrawBtn.addEventListener("click", async () => {
         not_eligible: "لم تصل بعد للحد المطلوب.",
         banned: "🚫 تم حظرك من استخدام البوت.",
       };
-      els.msg.textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
-      els.withdrawBtn.disabled = false;
+      $("pointsMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      $("withdrawBtn").disabled = false;
     }
   } catch (e) {
-    els.msg.textContent = "تعذّر الاتصال بالسيرفر.";
-    els.withdrawBtn.disabled = false;
+    $("pointsMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("withdrawBtn").disabled = false;
   }
 });
 
-loadPoints();
+/* ============== المسابقة ============== */
+let contestState = { code: null, voteTargetId: null };
+
+function tryAutoLoadContest() {
+  if (startParam.startsWith("c")) {
+    const rest = startParam.slice(1);
+    if (rest.startsWith("v")) {
+      // vote deep link: v<code>_<participantId>
+      const parts = rest.slice(1).split("_");
+      if (parts.length === 2) {
+        loadContest(parts[0]);
+        contestState.voteTargetId = parseInt(parts[1], 10);
+        return;
+      }
+    } else if (rest) {
+      loadContest(rest);
+      return;
+    }
+  }
+  $("contestCodeCard").style.display = "block";
+}
+
+$("contestCodeGo").addEventListener("click", () => {
+  const v = $("contestCodeInput").value.trim();
+  if (v) loadContest(v);
+});
+
+async function loadContest(code) {
+  contestState.code = code;
+  $("contestCodeCard").style.display = "none";
+  $("contestErrHint").style.display = "none";
+  $("contestContent").style.display = "none";
+  try {
+    const res = await fetch(`${API_BASE}/api/contest/${encodeURIComponent(code)}?initData=${encodeURIComponent(initData)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      const errors = {
+        not_found: "هذه المسابقة غير موجودة أو انتهت.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+        unauthorized: "تعذّر التحقق من هويتك، أعد فتح الصفحة من داخل البوت.",
+      };
+      $("contestErrText").textContent = errors[data.error] || "تعذّر تحميل المسابقة.";
+      $("contestErrHint").style.display = "block";
+      return;
+    }
+    renderContest(data);
+  } catch (e) {
+    $("contestErrText").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("contestErrHint").style.display = "block";
+  }
+}
+
+function renderContest(data) {
+  $("contestContent").style.display = "block";
+  $("contestTitle").textContent = "🏁 " + data.title;
+  const isOpen = data.status === "open";
+  $("contestStatusPill").textContent = isOpen ? "🟢 مفتوحة" : "🔴 منتهية";
+  $("contestStatusPill").className = "status-pill " + (isOpen ? "status-open" : "status-closed");
+
+  const pct = data.target_count > 0 ? Math.min(100, Math.round((data.participants_count / data.target_count) * 100)) : 0;
+  $("contestProgressFill").style.width = pct + "%";
+  $("contestProgressText").textContent = `${data.participants_count} / ${data.target_count} متسابق`;
+
+  const joinCard = $("contestJoinCard");
+  const joinBtn = $("contestJoinBtn");
+  if (data.my_participation) {
+    joinCard.style.display = "block";
+    joinBtn.disabled = true;
+    joinBtn.className = "action secondary";
+    joinBtn.textContent = `✅ أنت مشارك — كودك: ${data.my_participation.participant_code}`;
+  } else if (!isOpen) {
+    joinCard.style.display = "none";
+  } else {
+    joinCard.style.display = "block";
+    joinBtn.disabled = false;
+    joinBtn.className = "action";
+    joinBtn.textContent = "✅ سجّل مشاركتك";
+  }
+
+  renderLeaderboard(data.leaderboard, data.has_voted, isOpen);
+
+  if (contestState.voteTargetId && !data.has_voted && isOpen) {
+    setTimeout(() => castVote(contestState.voteTargetId), 300);
+    contestState.voteTargetId = null;
+  }
+}
+
+function renderLeaderboard(list, hasVoted, isOpen) {
+  const box = $("contestLeaderboard");
+  box.innerHTML = "";
+  $("contestEmptyHint").style.display = list.length ? "none" : "block";
+  const medals = ["gold", "silver", "bronze"];
+  list.forEach((p, i) => {
+    const row = document.createElement("div");
+    row.className = "lb-row";
+    const rankClass = medals[i] || "";
+    const rankLabel = i < 3 ? ["🥇","🥈","🥉"][i] : (i + 1);
+    row.innerHTML = `
+      <div class="lb-rank ${rankClass}">${rankLabel}</div>
+      <div class="lb-name ${p.is_me ? "me" : ""}">${escapeHtml(p.display_name)}</div>
+      <div class="lb-votes">${p.votes} 🗳️</div>
+      ${!p.is_me ? `<button class="vote-btn ${hasVoted ? "voted" : ""}" data-uid="${p.user_id}" ${(hasVoted || !isOpen) ? "disabled" : ""}>🤍</button>` : ""}
+    `;
+    box.appendChild(row);
+  });
+  box.querySelectorAll(".vote-btn").forEach(btn => {
+    btn.addEventListener("click", () => castVote(parseInt(btn.dataset.uid, 10)));
+  });
+}
+
+function escapeHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s || "";
+  return d.innerHTML;
+}
+
+$("contestJoinBtn").addEventListener("click", async () => {
+  if (!contestState.code) return;
+  $("contestJoinBtn").disabled = true;
+  $("contestJoinMsg").textContent = "جارٍ التسجيل...";
+  try {
+    const res = await fetch(`${API_BASE}/api/contest/${contestState.code}/join`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("contestJoinMsg").textContent = `✅ تم تسجيلك! كودك: ${data.participant_code}`;
+      loadContest(contestState.code);
+    } else {
+      const errors = {
+        full: "⚠️ اكتمل عدد المشاركين المسموح.",
+        contest_closed: "⚠️ انتهت هذه المسابقة.",
+        channel_subscription_required: "❌ يجب الاشتراك في قناة المسابقة أولاً.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      $("contestJoinMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      $("contestJoinBtn").disabled = false;
+    }
+  } catch (e) {
+    $("contestJoinMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("contestJoinBtn").disabled = false;
+  }
+});
+
+async function castVote(participantId) {
+  if (!contestState.code) return;
+  $("contestVoteMsg").textContent = "جارٍ إرسال تصويتك...";
+  try {
+    const res = await fetch(`${API_BASE}/api/contest/${contestState.code}/vote`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData, participant_id: participantId }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("contestVoteMsg").textContent = "✅ تم تسجيل تصويتك، شكرًا لك!";
+      loadContest(contestState.code);
+    } else {
+      const errors = {
+        already_voted: "✅ لقد صوّتّ مسبقًا في هذه المسابقة.",
+        self_vote: "🚫 لا يمكنك التصويت لنفسك.",
+        premium_required: "💎 هذه المسابقة لمصوّتي بريميوم فقط.",
+        channel_subscription_required: "❌ يجب الاشتراك في القناة الرسمية أولاً.",
+        contest_closed: "⚠️ انتهت هذه المسابقة.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      $("contestVoteMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      tg.HapticFeedback.notificationOccurred("error");
+    }
+  } catch (e) {
+    $("contestVoteMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+  }
+}
+
+/* ============== الروليت ============== */
+let rouletteState = { id: null };
+const RING_CIRC = 402;
+
+function tryAutoLoadRoulette() {
+  if (startParam.startsWith("r")) {
+    const id = startParam.slice(1);
+    if (id) { loadRoulette(id); return; }
+  }
+  $("rouletteCodeCard").style.display = "block";
+}
+
+$("rouletteCodeGo").addEventListener("click", () => {
+  const v = $("rouletteCodeInput").value.trim();
+  if (v) loadRoulette(v);
+});
+
+async function loadRoulette(id) {
+  rouletteState.id = id;
+  $("rouletteCodeCard").style.display = "none";
+  $("rouletteErrHint").style.display = "none";
+  $("rouletteContent").style.display = "none";
+  try {
+    const res = await fetch(`${API_BASE}/api/roulette/${encodeURIComponent(id)}?initData=${encodeURIComponent(initData)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      const errors = {
+        not_found: "هذا الروليت غير موجود.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+        unauthorized: "تعذّر التحقق من هويتك، أعد فتح الصفحة من داخل البوت.",
+      };
+      $("rouletteErrText").textContent = errors[data.error] || "تعذّر تحميل الروليت.";
+      $("rouletteErrHint").style.display = "block";
+      return;
+    }
+    renderRoulette(data);
+  } catch (e) {
+    $("rouletteErrText").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("rouletteErrHint").style.display = "block";
+  }
+}
+
+function renderRoulette(data) {
+  $("rouletteContent").style.display = "block";
+  const isOpen = data.status === "open";
+  $("rouletteStatusPill").textContent = isOpen ? "🟢 مفتوح" : "🔴 مغلق";
+  $("rouletteStatusPill").className = "status-pill " + (isOpen ? "status-open" : "status-closed");
+
+  $("rouletteNum").textContent = `${data.current_count}/${data.target_count}`;
+  const pct = data.target_count > 0 ? Math.min(1, data.current_count / data.target_count) : 0;
+  $("rouletteRing").style.strokeDashoffset = String(RING_CIRC * (1 - pct));
+
+  const btn = $("rouletteJoinBtn");
+  if (data.already_joined) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "✅ أنت مسجّل في هذا الروليت";
+  } else if (!isOpen) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "🔴 انتهى الروليت";
+  } else if (data.current_count >= data.target_count) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "⚠️ اكتمل العدد";
+  } else {
+    btn.disabled = false;
+    btn.className = "action";
+    btn.textContent = "🔶 اضغط لـ المشاركة 🔶";
+  }
+
+  const chipsBox = $("rouletteChips");
+  if (data.participants && data.participants.length) {
+    $("rouletteParticipantsCard").style.display = "block";
+    chipsBox.innerHTML = data.participants.map(p => `<span class="participant-chip">👤 ${escapeHtml(p.display_name)}</span>`).join("");
+  } else {
+    $("rouletteParticipantsCard").style.display = "none";
+  }
+}
+
+$("rouletteJoinBtn").addEventListener("click", async () => {
+  if (!rouletteState.id) return;
+  $("rouletteJoinBtn").disabled = true;
+  $("rouletteMsg").textContent = "جارٍ التسجيل...";
+  try {
+    const res = await fetch(`${API_BASE}/api/roulette/${rouletteState.id}/join`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("rouletteMsg").textContent = `✅ تم تسجيل مشاركتك! (${data.current_count}/${data.target_count})`;
+      loadRoulette(rouletteState.id);
+    } else {
+      const errors = {
+        full: "⚠️ اكتمل عدد المشاركين.",
+        roulette_closed: "⚠️ انتهى هذا الروليت.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      $("rouletteMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      $("rouletteJoinBtn").disabled = false;
+    }
+  } catch (e) {
+    $("rouletteMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("rouletteJoinBtn").disabled = false;
+  }
+});
+
+/* ============== بدء التشغيل ============== */
+(async function init() {
+  await loadPoints();
+  showApp();
+
+  if (startParam.startsWith("c")) {
+    switchTab("contest");
+  } else if (startParam.startsWith("r")) {
+    switchTab("roulette");
+  } else {
+    switchTab("points");
+  }
+})();
 </script>
 </body>
 </html>
