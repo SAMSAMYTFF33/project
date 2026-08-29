@@ -3,613 +3,864 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>VORTEX — 𝚅𝙾𝚁𝚃𝙴𝚇</title>
+<title>VORTEX</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0b0e1f; --card:rgba(255,255,255,.06); --card-border:rgba(255,255,255,.1);
-  --gold:#f5c451; --gold2:#e8a020; --blue:#4f8cff; --green:#2ecc71; --red:#ff5c6c;
-  --text:#eef1ff; --muted:#8b91b5;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{
-  font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);
-  min-height:100vh;padding-bottom:90px;overflow-x:hidden;
-  background-image:radial-gradient(ellipse at top,#1a1f3d 0%,#0b0e1f 60%);
-}
-.mono{font-family:monospace;letter-spacing:2px}
+  :root {
+    --bg: #0b0b12;
+    --bg2: #101018;
+    --text: #f5f5f9;
+    --hint: #8d8d9c;
+    --accent: #7c5cff;
+    --accent2: #ff5ca8;
+    --accent-text: #ffffff;
+    --card: #16161f;
+    --card-border: rgba(255,255,255,0.06);
+    --gold: #ffc94a;
+    --green: #3ddc84;
+    --red: #ff5c5c;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif;
+    background: radial-gradient(circle at 50% 0%, #1a1330 0%, var(--bg) 55%);
+    color: var(--text);
+  }
+  body { padding: 16px 14px 90px; min-height: 100vh; }
+  ::-webkit-scrollbar { display: none; }
 
-/* ---------- الهيدر ---------- */
-header{
-  text-align:center;padding:22px 16px 10px;position:sticky;top:0;z-index:50;
-  background:rgba(11,14,31,.85);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--card-border);
-}
-header .brand{
-  font-size:26px;font-weight:800;
-  background:linear-gradient(90deg,var(--gold),#fff,var(--gold));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-header .sub{font-size:12px;color:var(--muted);margin-top:4px}
-.loading-bar{height:3px;background:rgba(255,255,255,.08);margin-top:12px;border-radius:3px;overflow:hidden;display:none}
-.loading-bar.show{display:block}
-.loading-bar::after{
-  content:'';display:block;height:100%;width:40%;
-  background:linear-gradient(90deg,var(--gold),var(--gold2));
-  animation:slide 1s infinite;border-radius:3px;
-}
-@keyframes slide{0%{transform:translateX(150%)}100%{transform:translateX(-300%)}}
+  .brand {
+    text-align: center; font-size: 13px; letter-spacing: 3px;
+    color: var(--hint); margin-bottom: 16px; text-transform: uppercase;
+  }
+  .brand b {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-size: 15px; letter-spacing: 4px;
+  }
 
-/* ---------- الحاويات ---------- */
-.container{max-width:560px;margin:0 auto;padding:16px}
-.section{display:none;animation:fadeIn .3s ease}
-.section.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .card {
+    background: linear-gradient(180deg, var(--card), #121219);
+    border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 18px; margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    animation: fadeIn .35s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none; } }
 
-.card{
-  background:var(--card);border:1px solid var(--card-border);border-radius:18px;
-  padding:18px;margin-bottom:14px;backdrop-filter:blur(8px);
-}
-.card h3{font-size:15px;margin-bottom:10px;color:var(--gold)}
-.card .big-number{font-size:42px;font-weight:800;color:var(--gold);text-align:center;margin:6px 0}
-.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:14px}
-.row:last-child{border-bottom:none}
-.row .label{color:var(--muted)}
+  .balance-label { color: var(--hint); font-size: 13px; margin-bottom: 6px; }
+  .balance-value { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+  .balance-value span.unit { font-size: 16px; color: var(--hint); font-weight: 600; margin-right: 6px; }
 
-/* ---------- الأزرار ---------- */
-.btn{
-  display:block;width:100%;padding:14px;border:none;border-radius:14px;
-  font-family:inherit;font-size:15px;font-weight:700;color:#fff;cursor:pointer;
-  margin-top:10px;transition:transform .1s,opacity .2s;
-}
-.btn:active{transform:scale(.97)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1400}
-.btn.blue{background:linear-gradient(135deg,#4f8cff,#2f5fd0)}
-.btn.green{background:linear-gradient(135deg,#2ecc71,#1d9e54)}
-.btn.red{background:linear-gradient(135deg,#ff5c6c,#d63a4a)}
-.btn.ghost{background:transparent;border:1px solid var(--card-border);color:var(--text)}
+  .progress-wrap { margin-top: 16px; }
+  .progress-bar-bg { background: rgba(255,255,255,0.07); border-radius: 12px; height: 12px; overflow: hidden; }
+  .progress-bar-fill {
+    height: 100%; border-radius: 12px; transition: width .5s cubic-bezier(.4,0,.2,1);
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .progress-text { color: var(--hint); font-size: 12px; margin-top: 8px; }
 
-.input{
-  width:100%;padding:14px;border-radius:14px;border:1px solid var(--card-border);
-  background:rgba(0,0,0,.3);color:var(--text);font-family:inherit;font-size:15px;
-  text-align:center;outline:none;margin-top:8px;
-}
-.input:focus{border-color:var(--gold)}
+  .conditions { font-size: 13px; color: var(--hint); line-height: 1.9; white-space: pre-wrap; }
+  .card-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
 
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.badge.open{background:rgba(46,204,113,.15);color:var(--green)}
-.badge.closed{background:rgba(255,92,108,.15);color:var(--red)}
-.badge.paused{background:rgba(245,196,81,.15);color:var(--gold)}
+  .status-pill { display: inline-block; font-size: 12px; padding: 5px 12px; border-radius: 20px; font-weight: 600; }
+  .status-pending { background: rgba(255,201,74,0.15); color: var(--gold); }
+  .status-done { background: rgba(61,220,132,0.15); color: var(--green); }
+  .status-open { background: rgba(61,220,132,0.15); color: var(--green); }
+  .status-closed { background: rgba(255,92,92,0.15); color: var(--red); }
 
-/* ---------- شريط التقدم ---------- */
-.progress{height:12px;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;margin:10px 0}
-.progress .fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:8px;transition:width .5s ease}
+  button.action {
+    width: 100%; padding: 15px; border: none; border-radius: 16px; font-size: 15px;
+    font-weight: 700; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: var(--accent-text); margin-top: 6px; transition: transform .15s ease, opacity .15s ease;
+  }
+  button.action:active { transform: scale(.97); }
+  button.action:disabled { opacity: .4; }
+  button.action.secondary {
+    background: rgba(255,255,255,0.06); color: var(--text);
+    border: 1px solid var(--card-border);
+  }
+  button.action.danger { background: rgba(255,92,92,0.15); color: var(--red); }
 
-/* ---------- قائمة الترتيب / المشاركين ---------- */
-.list-item{
-  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
-  background:rgba(0,0,0,.2);margin-bottom:8px;font-size:14px;
-}
-.list-item .rank{width:28px;height:28px;border-radius:50%;background:rgba(245,196,81,.15);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0}
-.list-item .name{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.list-item .votes{color:var(--gold);font-weight:800}
-.list-item.me{border:1px solid var(--gold)}
-.vote-btn{background:var(--blue);border:none;color:#fff;border-radius:10px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
-.vote-btn:disabled{opacity:.4}
+  .msg { text-align: center; color: var(--hint); font-size: 13px; margin-top: 10px; min-height: 18px; }
+  .loading { text-align: center; color: var(--hint); padding: 60px 0; }
+  .spinner {
+    width: 30px; height: 30px; margin: 0 auto 14px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---------- شريط التنقل السفلي ---------- */
-nav{
-  position:fixed;bottom:0;right:0;left:0;z-index:100;
-  display:flex;justify-content:space-around;align-items:center;
-  background:rgba(13,16,35,.95);backdrop-filter:blur(14px);
-  border-top:1px solid var(--card-border);padding:8px 4px calc(8px + env(safe-area-inset-bottom));
-}
-nav button{
-  background:none;border:none;color:var(--muted);font-family:inherit;font-size:11px;
-  display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
-  padding:4px 8px;border-radius:12px;min-width:52px;
-}
-nav button .ico{font-size:20px}
-nav button.active{color:var(--gold)}
-nav button.active .ico{transform:scale(1.15)}
+  /* Tab bar */
+  .tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex; background: rgba(16,16,24,0.92); backdrop-filter: blur(14px);
+    border-top: 1px solid var(--card-border); padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    gap: 6px; z-index: 50;
+  }
+  .tab-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none; color: var(--hint); font-size: 11px; font-weight: 600;
+    padding: 6px 0; border-radius: 12px; transition: color .15s ease;
+  }
+  .tab-btn .icon { font-size: 20px; line-height: 1; }
+  .tab-btn.active { color: var(--text); }
+  .tab-btn.active .icon { filter: drop-shadow(0 0 8px rgba(124,92,255,0.7)); }
 
-/* ---------- المودال ---------- */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;
-  align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);
-}
-.modal-overlay.show{display:flex}
-.modal{
-  background:#151a33;border:1px solid var(--card-border);border-radius:20px;
-  padding:24px;max-width:400px;width:100%;text-align:center;animation:fadeIn .25s ease;
-}
-.modal h3{color:var(--gold);margin-bottom:12px}
-.captcha-target{font-size:52px;margin:14px 0}
-.captcha-options{display:flex;gap:12px;justify-content:center;margin-top:14px}
-.captcha-options button{
-  font-size:34px;width:72px;height:72px;border-radius:16px;border:1px solid var(--card-border);
-  background:rgba(255,255,255,.05);cursor:pointer;transition:transform .1s;
-}
-.captcha-options button:active{transform:scale(.9);border-color:var(--gold)}
+  .page { display: none; }
+  .page.active { display: block; }
 
-/* ---------- التنبيهات ---------- */
-#toast{
-  position:fixed;bottom:100px;right:50%;transform:translateX(50%);z-index:300;
-  background:#1c2242;border:1px solid var(--card-border);color:var(--text);
-  padding:12px 22px;border-radius:14px;font-size:14px;font-weight:600;
-  opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:88%;text-align:center;
-}
-#toast.show{opacity:1;transform:translateX(50%) translateY(-6px)}
-#toast.error{border-color:var(--red);color:#ffb3bb}
-#toast.success{border-color:var(--green);color:#a7f3c9}
+  /* Leaderboard */
+  .lb-row {
+    display: flex; align-items: center; gap: 10px; padding: 12px 4px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank {
+    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; background: rgba(255,255,255,0.06); color: var(--hint); flex-shrink: 0;
+  }
+  .lb-rank.gold { background: rgba(255,201,74,0.18); color: var(--gold); }
+  .lb-rank.silver { background: rgba(200,200,220,0.18); color: #d6d6e6; }
+  .lb-rank.bronze { background: rgba(205,127,50,0.2); color: #e0a466; }
+  .lb-name { flex: 1; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-name.me { color: var(--accent2); }
+  .lb-votes { font-size: 13px; color: var(--hint); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+  .vote-btn {
+    border: none; background: rgba(255,255,255,0.06); color: var(--text);
+    width: 38px; height: 38px; border-radius: 12px; font-size: 16px; flex-shrink: 0;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .vote-btn:active { transform: scale(.9); }
+  .vote-btn.voted { background: rgba(255,92,92,0.18); color: var(--red); }
+  .vote-btn:disabled { opacity: .35; }
 
-.empty{text-align:center;color:var(--muted);padding:24px 0;font-size:14px}
-.quote{
-  border-right:3px solid var(--gold);background:rgba(245,196,81,.06);
-  padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.9;color:#d8dcf5;
-}
-.terms-line{padding:6px 0;font-size:14px}
+  .code-input-wrap { display: flex; gap: 8px; }
+  input.code-input {
+    flex: 1; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--card-border);
+    background: rgba(255,255,255,0.05); color: var(--text); font-size: 15px; text-align: center;
+    letter-spacing: 1px;
+  }
+  input.code-input::placeholder { color: var(--hint); }
+  button.mini-btn {
+    padding: 0 18px; border: none; border-radius: 14px; font-weight: 700; font-size: 14px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #fff;
+  }
+
+  .empty-hint { text-align: center; color: var(--hint); font-size: 13px; padding: 30px 10px; line-height: 1.8; }
+  .empty-hint .icon { font-size: 34px; display: block; margin-bottom: 10px; }
+
+  .roulette-ring-wrap { display: flex; justify-content: center; margin: 6px 0 16px; }
+  .roulette-ring { position: relative; width: 150px; height: 150px; }
+  .roulette-ring svg { transform: rotate(-90deg); }
+  .roulette-ring .bg-ring { stroke: rgba(255,255,255,0.07); }
+  .roulette-ring .fg-ring { stroke: url(#ringGrad); transition: stroke-dashoffset .6s ease; stroke-linecap: round; }
+  .roulette-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .roulette-center .num { font-size: 28px; font-weight: 800; }
+  .roulette-center .lbl { font-size: 11px; color: var(--hint); margin-top: 2px; }
+
+  .participant-chip {
+    display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border); border-radius: 20px; padding: 6px 12px; font-size: 12px; margin: 3px;
+  }
+  .chips-wrap { display: flex; flex-wrap: wrap; margin-top: 6px; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand mono">𝚅𝙾𝚁𝚃𝙴𝚇</div>
-  <div class="sub">روليت السحوبات والمسابقات</div>
-  <div class="loading-bar" id="loadingBar"></div>
-</header>
+<div class="brand"><b>𝚅𝙾𝚁𝚃𝙴𝚇</b></div>
 
-<div class="container">
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  جارٍ التحميل...
+</div>
 
-  <!-- ======================= 💎 نقاطي ======================= -->
-  <div class="section active" id="sec-points">
+<div id="app" style="display:none">
+
+  <!-- ===== صفحة النقاط ===== -->
+  <div class="page" id="page-points">
     <div class="card">
-      <h3 id="pointsTitle">🎁 ربح من البوت</h3>
-      <div class="big-number"><span id="pointsBalance">0</span> نقطة</div>
-      <div class="row"><span class="label">🎯 المكافأة عند</span><span id="pointsRequired">0</span> نقطة</div>
-      <div class="row"><span class="label">📋 آخر طلب سحب</span><span id="lastRequest">—</span></div>
-      <button class="btn gold" id="withdrawBtn" onclick="doWithdraw()">💎 سحب النقاط</button>
+      <div class="balance-label" id="titleLabel">رصيدك الحالي</div>
+      <div class="balance-value"><span id="pointsValue">0</span><span class="unit">نقطة</span></div>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-text" id="progressText"></div>
+      </div>
     </div>
+
     <div class="card">
-      <h3>📌 الشروط</h3>
-      <div class="quote" id="pointsConditions">جارٍ التحميل...</div>
+      <div class="card-title">📌 الشروط</div>
+      <div class="conditions" id="conditionsText"></div>
+    </div>
+
+    <div class="card" id="requestCard" style="display:none">
+      <div class="card-title">آخر طلب سحب</div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div id="requestAmount" style="font-weight:700; font-size:15px;"></div>
+        <span class="status-pill" id="requestStatus"></span>
+      </div>
+    </div>
+
+    <button class="action" id="withdrawBtn">طلب السحب</button>
+    <div class="msg" id="pointsMsg"></div>
+  </div>
+
+  <!-- ===== صفحة المسابقة ===== -->
+  <div class="page" id="page-contest">
+    <div id="contestCodeCard" class="card" style="display:none">
+      <div class="card-title">🏁 أدخل كود المسابقة</div>
+      <div class="code-input-wrap">
+        <input class="code-input" id="contestCodeInput" placeholder="مثال: 12345678" inputmode="numeric">
+        <button class="mini-btn" id="contestCodeGo">فتح</button>
+      </div>
+    </div>
+
+    <div id="contestContent" style="display:none">
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <div class="card-title" id="contestTitle" style="margin-bottom:0;">🏁 المسابقة</div>
+          <span class="status-pill" id="contestStatusPill"></span>
+        </div>
+        <div class="progress-wrap" id="contestProgressWrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="contestProgressFill" style="width:0%"></div></div>
+          <div class="progress-text" id="contestProgressText"></div>
+        </div>
+      </div>
+
+      <div class="card" id="contestJoinCard">
+        <button class="action" id="contestJoinBtn">✅ سجّل مشاركتك</button>
+        <div class="msg" id="contestJoinMsg"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏆 لوحة الترتيب</div>
+        <div id="contestLeaderboard"></div>
+        <div class="empty-hint" id="contestEmptyHint" style="display:none">
+          <span class="icon">🙈</span>لا يوجد متسابقون بعد
+        </div>
+      </div>
+      <div class="msg" id="contestVoteMsg"></div>
+    </div>
+
+    <div class="empty-hint" id="contestErrHint" style="display:none">
+      <span class="icon">⚠️</span><span id="contestErrText">تعذّر تحميل المسابقة</span>
     </div>
   </div>
 
-  <!-- ======================= 🏁 المسابقة ======================= -->
-  <div class="section" id="sec-contest">
-    <div class="card">
-      <h3>🏁 أدخل كود المسابقة</h3>
-      <input class="input" id="contestCodeInput" placeholder="مثال: 12345678" inputmode="numeric">
-      <button class="btn blue" onclick="openContest()">فتح 🏁</button>
+  <!-- ===== صفحة الروليت ===== -->
+  <div class="page" id="page-roulette">
+    <div id="rouletteCodeCard" class="card" style="display:none">
+      <div class="card-title">🔷 أدخل رقم الروليت</div>
+      <div class="code-input-wrap">
+        <input class="code-input" id="rouletteCodeInput" placeholder="مثال: 42" inputmode="numeric">
+        <button class="mini-btn" id="rouletteCodeGo">فتح</button>
+      </div>
     </div>
-    <div id="contestResult"></div>
+
+    <div id="rouletteContent" style="display:none">
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+          <div class="card-title" style="margin-bottom:0;">🔷 روليت VORTEX</div>
+          <span class="status-pill" id="rouletteStatusPill"></span>
+        </div>
+        <div class="roulette-ring-wrap">
+          <div class="roulette-ring">
+            <svg width="150" height="150">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#7c5cff"/>
+                  <stop offset="100%" stop-color="#ff5ca8"/>
+                </linearGradient>
+              </defs>
+              <circle class="bg-ring" cx="75" cy="75" r="64" fill="none" stroke-width="12"/>
+              <circle class="fg-ring" id="rouletteRing" cx="75" cy="75" r="64" fill="none" stroke-width="12"
+                      stroke-dasharray="402" stroke-dashoffset="402"/>
+            </svg>
+            <div class="roulette-center">
+              <div class="num" id="rouletteNum">0/0</div>
+              <div class="lbl">مشارك</div>
+            </div>
+          </div>
+        </div>
+        <button class="action" id="rouletteJoinBtn">🔶 اضغط لـ المشاركة 🔶</button>
+        <div class="msg" id="rouletteMsg"></div>
+      </div>
+
+      <div class="card" id="rouletteParticipantsCard" style="display:none">
+        <div class="card-title">👥 المشاركون</div>
+        <div class="chips-wrap" id="rouletteChips"></div>
+      </div>
+    </div>
+
+    <div class="empty-hint" id="rouletteErrHint" style="display:none">
+      <span class="icon">⚠️</span><span id="rouletteErrText">تعذّر تحميل الروليت</span>
+    </div>
   </div>
 
-  <!-- ======================= 🎁 السحب ======================= -->
-  <div class="section" id="sec-giveaway">
-    <div class="card">
-      <h3>🎁 أدخل كود السحب</h3>
-      <input class="input" id="gwCodeInput" placeholder="كود السحب">
-      <button class="btn blue" onclick="openGiveaway()">فتح 🎁</button>
+  <!-- ===== صفحة السحب ===== -->
+  <div class="page" id="page-giveaway">
+    <div id="giveawayCodeCard" class="card" style="display:none">
+      <div class="card-title">🎁 أدخل كود السحب</div>
+      <div class="code-input-wrap">
+        <input class="code-input" id="giveawayCodeInput" placeholder="مثال: 12345678" inputmode="numeric">
+        <button class="mini-btn" id="giveawayCodeGo">فتح</button>
+      </div>
     </div>
-    <div id="gwResult"></div>
-  </div>
 
-  <!-- ======================= 🔷 الروليت ======================= -->
-  <div class="section" id="sec-roulette">
-    <div class="card">
-      <h3>🔷 أدخل رقم الروليت</h3>
-      <input class="input" id="rouletteIdInput" placeholder="مثال: 15" inputmode="numeric">
-      <button class="btn blue" onclick="openRoulette()">فتح 🔷</button>
+    <div id="giveawayContent" style="display:none">
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <div class="card-title" id="giveawayTitle" style="margin-bottom:0;">🎁 السحب</div>
+          <span class="status-pill" id="giveawayStatusPill"></span>
+        </div>
+        <div class="conditions" id="giveawayWinnersText"></div>
+      </div>
+
+      <div class="card">
+        <button class="action" id="giveawayJoinBtn">🎁 شارك في السحب</button>
+        <div class="msg" id="giveawayMsg"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👥 عدد المشاركين</div>
+        <div class="balance-value" style="font-size:28px"><span id="giveawayParticipantsCount">0</span></div>
+      </div>
     </div>
-    <div id="rouletteResult"></div>
-  </div>
 
-  <!-- ======================= 🏆 لوحة الترتيب ======================= -->
-  <div class="section" id="sec-leaderboard">
-    <div class="card">
-      <h3>🏆 أعلى القنوات بالنقاط</h3>
-      <div id="leaderboardList"><div class="empty">🙈 لا يوجد متسابقون بعد</div></div>
-    </div>
-  </div>
-
-  <!-- ======================= 📜 الشروط ======================= -->
-  <div class="section" id="sec-terms">
-    <div class="card">
-      <h3>📜 سياسة الاستخدام والخصوصية</h3>
-      <div class="terms-line">ثقتكم هي أولويتنا 💛</div>
-      <div class="terms-line">✅ <b>المسموح به:</b></div>
-      <div class="terms-line">├ تنظيم سحوبات حقيقية وواضحة</div>
-      <div class="terms-line">├ تقديم جوائز حقيقية وموثوقة</div>
-      <div class="terms-line">└ احترام جميع المشاركين</div>
-      <div class="terms-line" style="margin-top:10px">❌ <b>الممنوع:</b></div>
-      <div class="terms-line">├ سحوبات وهمية أو مضللة</div>
-      <div class="terms-line">├ خداع المستخدمين</div>
-      <div class="terms-line">└ التلاعب بالنتائج</div>
-      <div class="quote" style="margin-top:14px">🚨 أي مخالفة = حظر دائم<br>ثقتكم هي أولويتنا</div>
+    <div class="empty-hint" id="giveawayErrHint" style="display:none">
+      <span class="icon">⚠️</span><span id="giveawayErrText">تعذّر تحميل السحب</span>
     </div>
   </div>
 
 </div>
 
-<!-- ---------- شريط التنقل ---------- -->
-<nav>
-  <button class="active" data-tab="sec-points" onclick="switchTab(this)"><span class="ico">💎</span>نقاطي</button>
-  <button data-tab="sec-contest" onclick="switchTab(this)"><span class="ico">🏁</span>المسابقة</button>
-  <button data-tab="sec-giveaway" onclick="switchTab(this)"><span class="ico">🎁</span>السحب</button>
-  <button data-tab="sec-roulette" onclick="switchTab(this)"><span class="ico">🔷</span>الروليت</button>
-  <button data-tab="sec-leaderboard" onclick="switchTab(this)"><span class="ico">🏆</span>الترتيب</button>
-  <button data-tab="sec-terms" onclick="switchTab(this)"><span class="ico">📜</span>الشروط</button>
-</nav>
-
-<!-- ---------- مودال الكابتشا ---------- -->
-<div class="modal-overlay" id="captchaModal">
-  <div class="modal">
-    <h3>🤖 للتحقق أنك لست روبوت</h3>
-    <div>اضغط على الرمز:</div>
-    <div class="captcha-target" id="captchaTarget"></div>
-    <div class="captcha-options" id="captchaOptions"></div>
-  </div>
+<div class="tabbar" id="tabbar" style="display:none">
+  <button class="tab-btn" data-page="points"><span class="icon">💎</span>نقاطي</button>
+  <button class="tab-btn" data-page="contest"><span class="icon">🏁</span>المسابقة</button>
+  <button class="tab-btn" data-page="roulette"><span class="icon">🔷</span>الروليت</button>
+  <button class="tab-btn" data-page="giveaway"><span class="icon">🎁</span>السحب</button>
 </div>
-
-<div id="toast"></div>
 
 <script>
-// =====================================================================
-//  VORTEX Web App — الواجهة الأمامية
-// =====================================================================
-const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
-const initData = tg?.initData || "";
-const API = ""; // نفس النطاق — اتركه فارغًا
+const API_BASE = "https://project-2-i1bf.onrender.com";
 
-let captchaResolver = null;
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+try { tg.setHeaderColor("#0b0b12"); tg.setBackgroundColor("#0b0b12"); } catch (e) {}
 
-// ---------------- أدوات عامة ----------------
-function $(id){ return document.getElementById(id); }
-function showLoading(v){ $("loadingBar").classList.toggle("show", v); }
-function esc(s){ const d=document.createElement("div"); d.textContent=s??""; return d.innerHTML; }
+const initData = tg.initData || "";
+const startParam = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || "";
 
-function toast(msg, type=""){
-  const t = $("toast");
-  t.textContent = msg;
-  t.className = "show " + type;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(()=> t.className = "", 3000);
+const $ = (id) => document.getElementById(id);
+const loadingEl = $("loading");
+const appEl = $("app");
+const tabbarEl = $("tabbar");
+
+function showApp() {
+  loadingEl.style.display = "none";
+  appEl.style.display = "block";
+  tabbarEl.style.display = "flex";
 }
 
-async function api(path, opts={}){
-  showLoading(true);
-  try{
-    const res = await fetch(API + path, {
-      method: opts.body ? "POST" : "GET",
-      headers: {"Content-Type":"application/json"},
-      body: opts.body ? JSON.stringify({...opts.body, initData}) : undefined,
+function switchTab(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  $("page-" + name).classList.add("active");
+  document.querySelector(`.tab-btn[data-page="${name}"]`).classList.add("active");
+  if (name === "contest" && !contestState.code) tryAutoLoadContest();
+  if (name === "roulette" && !rouletteState.id) tryAutoLoadRoulette();
+  if (name === "giveaway" && !giveawayState.code) tryAutoLoadGiveaway();
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.page));
+});
+
+/* ============== نقاطي ============== */
+let pointsState = null;
+
+async function loadPoints() {
+  try {
+    const res = await fetch(`${API_BASE}/api/points?initData=${encodeURIComponent(initData)}`);
+    const data = await res.json();
+    if (!res.ok) return;
+    pointsState = data;
+    renderPoints();
+  } catch (e) {}
+}
+
+function renderPoints() {
+  const s = pointsState;
+  if (!s) return;
+  $("titleLabel").textContent = s.title;
+  $("pointsValue").textContent = s.points;
+  $("conditionsText").textContent = s.conditions;
+
+  if (s.required > 0) {
+    const pct = Math.min(100, Math.round((s.points / s.required) * 100));
+    $("progressFill").style.width = pct + "%";
+    $("progressText").textContent = `${s.points} / ${s.required} نقطة للوصول للمكافأة`;
+  } else {
+    $("progressWrap").style.display = "none";
+  }
+
+  if (s.latest_request) {
+    $("requestCard").style.display = "block";
+    $("requestAmount").textContent = `💎 ${s.latest_request.points_amount} نقطة`;
+    const isPending = s.latest_request.status === "pending";
+    $("requestStatus").textContent = isPending ? "🟡 قيد الانتظار" : "🟢 مكتمل";
+    $("requestStatus").className = "status-pill " + (isPending ? "status-pending" : "status-done");
+  }
+
+  const btn = $("withdrawBtn");
+  if (s.pending) {
+    btn.textContent = "🟡 طلب السحب قيد الانتظار";
+    btn.disabled = true;
+  } else if (s.eligible) {
+    btn.textContent = `✅ سحب ${s.points} نقطة`;
+    btn.disabled = false;
+  } else {
+    btn.textContent = `🔒 سحب (${s.points}/${s.required})`;
+    btn.disabled = true;
+  }
+}
+
+$("withdrawBtn").addEventListener("click", async () => {
+  if (!pointsState || !pointsState.eligible) return;
+  $("withdrawBtn").disabled = true;
+  $("pointsMsg").textContent = "جارٍ إرسال الطلب...";
+  try {
+    const res = await fetch(`${API_BASE}/api/withdraw`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
     });
-    const data = await res.json().catch(()=>({}));
-    if(!res.ok) throw Object.assign(new Error(data.error||"error"), {data});
-    return data;
-  } catch(e){
-    if(e.message === "Failed to fetch"){ toast("⚠️ تعذّر الاتصال بالسيرفر","error"); }
-    throw e;
-  } finally { showLoading(false); }
-}
-
-function switchTab(btn){
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  btn.classList.add("active");
-  $(btn.dataset.tab).classList.add("active");
-  tg?.HapticFeedback?.selectionChanged();
-  if(btn.dataset.tab === "sec-leaderboard") loadLeaderboard();
-}
-
-const ERRORS = {
-  unauthorized:"⚠️ افتح التطبيق من داخل تيليجرام",
-  banned:"🚫 تم حظرك من استخدام هذا البوت",
-  not_found:"⚠️ غير موجود أو منتهي",
-  full:"⚠️ اكتمل العدد المسموح",
-  contest_closed:"⚠️ المسابقة منتهية",
-  giveaway_closed:"⚠️ السحب غير متاح حاليًا",
-  roulette_closed:"⚠️ الروليت منتهي",
-  self_vote:"🚫 لا يمكنك التصويت لنفسك",
-  already_voted:"✅ لقد صوّت مسبقًا",
-  premium_required:"💎 هذا القسم للمميزين فقط",
-  captcha_failed:"❌ رمز غير صحيح، حاول مجددًا",
-  channel_subscription_required:"❌ يجب الاشتراك في القناة أولاً",
-  host_channel_required:"❌ يجب الاشتراك في قناة السحب أولاً",
-  condition_channel_required:"❌ يجب الاشتراك في قناة الشرط أولاً",
-  boost_required:"❌ يجب تعزيز القناة أولاً",
-  vote_required:"❌ يجب التصويت للمتسابق أولاً",
-  already_pending:"🟡 لديك طلب قيد الانتظار",
-  not_eligible:"🔒 لم تصل للحد المطلوب بعد",
-  username_required:"⚠️ أضف يوزر في تيليجرام أولاً",
-  need_two:"⚠️ يحتاج مشاركين اثنين على الأقل",
-  forbidden:"⚠️ غير مصرح لك",
-  already_spun:"⚠️ تم التدوير مسبقًا",
-};
-function showError(e){
-  const msg = ERRORS[e.message] || (e.data?.channel ? `❌ اشترك في @${e.data.channel} أولاً` : "⚠️ حدث خطأ");
-  toast(msg, "error");
-}
-
-// ---------------- الكابتشا ----------------
-function askCaptcha(){
-  return new Promise(async (resolve)=>{
-    try{
-      const cap = await api("/api/captcha/new");
-      captchaResolver = resolve;
-      $("captchaTarget").textContent = cap.target;
-      const box = $("captchaOptions");
-      box.innerHTML = "";
-      cap.options.forEach((emoji, idx)=>{
-        const b = document.createElement("button");
-        b.textContent = emoji;
-        b.onclick = ()=>{
-          $("captchaModal").classList.remove("show");
-          tg?.HapticFeedback?.impactOccurred("medium");
-          resolve({token: cap.token, index: idx});
-        };
-        box.appendChild(b);
-      });
-      $("captchaModal").classList.add("show");
-    }catch(e){ showError(e); resolve(null); }
-  });
-}
-document.addEventListener("click", e=>{
-  if(e.target.id === "captchaModal"){
-    $("captchaModal").classList.remove("show");
-    if(captchaResolver){ captchaResolver(null); captchaResolver=null; }
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("pointsMsg").textContent = "✅ تم إرسال طلب السحب بنجاح.";
+      await loadPoints();
+    } else {
+      const errors = {
+        username_required: "يجب أن يكون لديك يوزر تليجرام (@username) قبل السحب.",
+        already_pending: "لديك طلب سحب قيد الانتظار بالفعل.",
+        not_eligible: "لم تصل بعد للحد المطلوب.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      $("pointsMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      $("withdrawBtn").disabled = false;
+    }
+  } catch (e) {
+    $("pointsMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("withdrawBtn").disabled = false;
   }
 });
 
-// ---------------- 💎 النقاط ----------------
-async function loadPoints(){
-  try{
-    const d = await api("/api/points");
-    $("pointsTitle").textContent = d.title;
-    $("pointsBalance").textContent = d.points;
-    $("pointsRequired").textContent = d.required;
-    $("pointsConditions").textContent = d.conditions;
-    const btn = $("withdrawBtn");
-    if(d.pending){
-      btn.textContent = "🟡 طلب السحب قيد الانتظار"; btn.disabled = true; btn.className="btn ghost";
-    } else if(d.eligible){
-      btn.textContent = `✅ سحب ${d.points} نقطة`; btn.disabled = false; btn.className="btn gold";
-    } else {
-      btn.textContent = `🔒 سحب (${d.points}/${d.required} نقطة)`; btn.disabled = true; btn.className="btn ghost";
+/* ============== المسابقة ============== */
+let contestState = { code: null, voteTargetId: null };
+
+function tryAutoLoadContest() {
+  if (startParam.startsWith("c")) {
+    const rest = startParam.slice(1);
+    if (rest.startsWith("v")) {
+      // vote deep link: v<code>_<participantId>
+      const parts = rest.slice(1).split("_");
+      if (parts.length === 2) {
+        loadContest(parts[0]);
+        contestState.voteTargetId = parseInt(parts[1], 10);
+        return;
+      }
+    } else if (rest) {
+      loadContest(rest);
+      return;
     }
-    $("lastRequest").textContent = d.latest_request
-      ? `${d.latest_request.points_amount} نقطة — ${d.latest_request.status==="pending"?"🟡 قيد الانتظار":"🟢 مكتمل"}`
-      : "—";
-  }catch(e){ showError(e); }
+  }
+  $("contestCodeCard").style.display = "block";
 }
 
-async function doWithdraw(){
-  try{
-    const d = await api("/api/withdraw", {body:{}});
-    toast(`✅ تم إرسال طلب سحب ${d.points_amount} نقطة!`, "success");
-    tg?.HapticFeedback?.notificationOccurred("success");
-    loadPoints();
-  }catch(e){ showError(e); }
-}
+$("contestCodeGo").addEventListener("click", () => {
+  const v = $("contestCodeInput").value.trim();
+  if (v) loadContest(v);
+});
 
-// ---------------- 🏁 المسابقة ----------------
-let currentContest = null;
-
-async function openContest(){
-  const code = $("contestCodeInput").value.trim();
-  if(!code) return toast("⚠️ أدخل كود المسابقة","error");
-  try{
-    currentContest = await api(`/api/contest/${encodeURIComponent(code)}`);
-    renderContest(currentContest);
-  }catch(e){
-    if(e.message === "not_found") $("contestResult").innerHTML =
-      `<div class="card"><div class="empty">⚠️ تعذّر تحميل المسابقة</div></div>`;
-    showError(e);
+async function loadContest(code) {
+  contestState.code = code;
+  $("contestCodeCard").style.display = "none";
+  $("contestErrHint").style.display = "none";
+  $("contestContent").style.display = "none";
+  try {
+    const res = await fetch(`${API_BASE}/api/contest/${encodeURIComponent(code)}?initData=${encodeURIComponent(initData)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      const errors = {
+        not_found: "هذه المسابقة غير موجودة أو انتهت.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+        unauthorized: "تعذّر التحقق من هويتك، أعد فتح الصفحة من داخل البوت.",
+      };
+      $("contestErrText").textContent = errors[data.error] || "تعذّر تحميل المسابقة.";
+      $("contestErrHint").style.display = "block";
+      return;
+    }
+    renderContest(data);
+  } catch (e) {
+    $("contestErrText").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("contestErrHint").style.display = "block";
   }
 }
 
-function renderContest(c){
-  const statusBadge = c.status === "open"
-    ? `<span class="badge open">🟢 نشطة</span>`
-    : `<span class="badge closed">🔴 منتهية</span>`;
-  let lb = "";
-  if(!c.leaderboard.length){
-    lb = `<div class="empty">🙈 لا يوجد متسابقون بعد</div>`;
+function renderContest(data) {
+  $("contestContent").style.display = "block";
+  $("contestTitle").textContent = "🏁 " + data.title;
+  const isOpen = data.status === "open";
+  $("contestStatusPill").textContent = isOpen ? "🟢 مفتوحة" : "🔴 منتهية";
+  $("contestStatusPill").className = "status-pill " + (isOpen ? "status-open" : "status-closed");
+
+  const pct = data.target_count > 0 ? Math.min(100, Math.round((data.participants_count / data.target_count) * 100)) : 0;
+  $("contestProgressFill").style.width = pct + "%";
+  $("contestProgressText").textContent = `${data.participants_count} / ${data.target_count} متسابق`;
+
+  const joinCard = $("contestJoinCard");
+  const joinBtn = $("contestJoinBtn");
+  if (data.my_participation) {
+    joinCard.style.display = "block";
+    joinBtn.disabled = true;
+    joinBtn.className = "action secondary";
+    joinBtn.textContent = `✅ أنت مشارك — كودك: ${data.my_participation.participant_code}`;
+  } else if (!isOpen) {
+    joinCard.style.display = "none";
   } else {
-    lb = c.leaderboard.map((r,i)=>`
-      <div class="list-item ${r.is_me?"me":""}">
-        <span class="rank">${i+1}</span>
-        <span class="name">${esc(r.display_name)}</span>
-        <span class="votes">🤍 ${r.votes}</span>
-        <button class="vote-btn" ${c.has_voted||c.status!=="open"||r.is_me?"disabled":""}
-          onclick="voteFor(${r.user_id})">تصويت</button>
-      </div>`).join("");
+    joinCard.style.display = "block";
+    joinBtn.disabled = false;
+    joinBtn.className = "action";
+    joinBtn.textContent = "✅ سجّل مشاركتك";
   }
-  let myPart = "";
-  if(c.my_participation){
-    myPart = `<div class="card">
-      <h3>🎟 كود المتسابق الخاص بك</h3>
-      <div style="text-align:center;font-weight:800;font-size:18px;color:var(--gold);letter-spacing:1px">${esc(c.my_participation.participant_code)}</div>
-      <button class="btn ghost" onclick="navigator.clipboard.writeText('${c.my_participation.participant_code}');toast('✅ تم النسخ','success')">📋 نسخ الكود</button>
-    </div>`;
+
+  renderLeaderboard(data.leaderboard, data.has_voted, isOpen);
+
+  if (contestState.voteTargetId && !data.has_voted && isOpen) {
+    setTimeout(() => castVote(contestState.voteTargetId), 300);
+    contestState.voteTargetId = null;
   }
-  $("contestResult").innerHTML = `
-    <div class="card">
-      <div class="row"><span class="label">📋 المسابقة</span><b>${esc(c.title)}</b></div>
-      <div class="row"><span class="label">📊 الحالة</span>${statusBadge}</div>
-      <div class="row"><span class="label">👥 المتسابقون</span><b>${c.participants_count} / ${c.target_count}</b></div>
-      ${c.premium_only?`<div class="row"><span class="label">💎 التصويت</span><b>بريميوم فقط</b></div>`:""}
-      <div class="progress"><div class="fill" style="width:${Math.min(100,c.participants_count/c.target_count*100)}%"></div></div>
-      ${c.my_participation?"":(c.status==="open"?`<button class="btn green" onclick="joinContest()">✅ سجّل مشاركتك</button>`:"")}
-    </div>
-    ${myPart}
-    <div class="card"><h3>🏆 لوحة الترتيب</h3>${lb}</div>`;
 }
 
-async function joinContest(){
-  try{
-    await api(`/api/contest/${currentContest.contest_code}/join`, {body:{}});
-    toast("✅ تم تسجيل مشاركتك بنجاح!","success");
-    tg?.HapticFeedback?.notificationOccurred("success");
-    openContest();
-  }catch(e){ showError(e); }
+function renderLeaderboard(list, hasVoted, isOpen) {
+  const box = $("contestLeaderboard");
+  box.innerHTML = "";
+  $("contestEmptyHint").style.display = list.length ? "none" : "block";
+  const medals = ["gold", "silver", "bronze"];
+  list.forEach((p, i) => {
+    const row = document.createElement("div");
+    row.className = "lb-row";
+    const rankClass = medals[i] || "";
+    const rankLabel = i < 3 ? ["🥇","🥈","🥉"][i] : (i + 1);
+    row.innerHTML = `
+      <div class="lb-rank ${rankClass}">${rankLabel}</div>
+      <div class="lb-name ${p.is_me ? "me" : ""}">${escapeHtml(p.display_name)}</div>
+      <div class="lb-votes">${p.votes} 🗳️</div>
+      ${!p.is_me ? `<button class="vote-btn ${hasVoted ? "voted" : ""}" data-uid="${p.user_id}" ${(hasVoted || !isOpen) ? "disabled" : ""}>🤍</button>` : ""}
+    `;
+    box.appendChild(row);
+  });
+  box.querySelectorAll(".vote-btn").forEach(btn => {
+    btn.addEventListener("click", () => castVote(parseInt(btn.dataset.uid, 10)));
+  });
 }
 
-async function voteFor(participantId){
-  const cap = await askCaptcha();
-  if(!cap) return;
-  try{
-    const d = await api(`/api/contest/${currentContest.contest_code}/vote`, {
-      body:{participant_id: participantId, captcha_token: cap.token, captcha_index: cap.index}
+function escapeHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s || "";
+  return d.innerHTML;
+}
+
+$("contestJoinBtn").addEventListener("click", async () => {
+  if (!contestState.code) return;
+  $("contestJoinBtn").disabled = true;
+  $("contestJoinMsg").textContent = "جارٍ التسجيل...";
+  try {
+    const res = await fetch(`${API_BASE}/api/contest/${contestState.code}/join`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
     });
-    toast("✅ تم التحقق وتسجيل تصويتك بنجاح!","success");
-    tg?.HapticFeedback?.notificationOccurred("success");
-    currentContest.leaderboard = d.leaderboard.map(r=>({...r, is_me:false}));
-    currentContest.has_voted = true;
-    renderContest(currentContest);
-  }catch(e){ showError(e); }
-}
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("contestJoinMsg").textContent = `✅ تم تسجيلك! كودك: ${data.participant_code}`;
+      loadContest(contestState.code);
+    } else {
+      const errors = {
+        full: "⚠️ اكتمل عدد المشاركين المسموح.",
+        contest_closed: "⚠️ انتهت هذه المسابقة.",
+        channel_subscription_required: "❌ يجب الاشتراك في قناة المسابقة أولاً.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      $("contestJoinMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      $("contestJoinBtn").disabled = false;
+    }
+  } catch (e) {
+    $("contestJoinMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("contestJoinBtn").disabled = false;
+  }
+});
 
-// ---------------- 🎁 السحب ----------------
-let currentGw = null;
-
-async function openGiveaway(){
-  const code = $("gwCodeInput").value.trim();
-  if(!code) return toast("⚠️ أدخل كود السحب","error");
-  try{
-    currentGw = await api(`/api/giveaway/${encodeURIComponent(code)}`);
-    renderGiveaway(currentGw);
-  }catch(e){
-    if(e.message === "not_found") $("gwResult").innerHTML =
-      `<div class="card"><div class="empty">⚠️ تعذّر تحميل السحب</div></div>`;
-    showError(e);
+async function castVote(participantId) {
+  if (!contestState.code) return;
+  $("contestVoteMsg").textContent = "جارٍ إرسال تصويتك...";
+  try {
+    const res = await fetch(`${API_BASE}/api/contest/${contestState.code}/vote`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData, participant_id: participantId }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("contestVoteMsg").textContent = "✅ تم تسجيل تصويتك، شكرًا لك!";
+      loadContest(contestState.code);
+    } else {
+      const errors = {
+        already_voted: "✅ لقد صوّتّ مسبقًا في هذه المسابقة.",
+        self_vote: "🚫 لا يمكنك التصويت لنفسك.",
+        premium_required: "💎 هذه المسابقة لمصوّتي بريميوم فقط.",
+        channel_subscription_required: "❌ يجب الاشتراك في القناة الرسمية أولاً.",
+        contest_closed: "⚠️ انتهت هذه المسابقة.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      $("contestVoteMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      tg.HapticFeedback.notificationOccurred("error");
+    }
+  } catch (e) {
+    $("contestVoteMsg").textContent = "تعذّر الاتصال بالسيرفر.";
   }
 }
 
-function renderGiveaway(g){
-  const badge = g.status === "open" ? `<span class="badge open">🟢 نشط</span>` : `<span class="badge closed">🔴 مغلق</span>`;
-  const conds = [];
-  if(g.premium_only) conds.push("💎 للمميزين فقط");
-  if(g.boost_required) conds.push("⚡ تعزيز القناة");
-  if(g.has_conditions) conds.push("📢 قناة شرط");
-  if(g.vote_required) conds.push("🤍 تصويت لمتسابق");
-  if(g.antispam) conds.push("🛡 منع الرشق (كابتشا)");
-  $("gwResult").innerHTML = `
-    <div class="card">
-      <div class="row"><span class="label">🎁 السحب</span><b>#${esc(g.gw_code)}</b></div>
-      <div class="row"><span class="label">📊 الحالة</span>${badge}</div>
-      <div class="row"><span class="label">🏆 عدد الفائزين</span><b>${g.winners_count}</b></div>
-      <div class="row"><span class="label">👥 المشاركون</span><b>${g.participants_count}</b></div>
-      ${conds.length?`<div class="quote" style="margin-top:10px">الشروط: ${conds.join(" • ")}</div>`:""}
-      ${g.cliche_text?`<div class="quote" style="margin-top:10px">${esc(g.cliche_text)}</div>`:""}
-      ${g.already_joined
-        ? `<button class="btn ghost" disabled>✅ أنت مسجّل بالفعل</button>`
-        : (g.status==="open" ? `<button class="btn green" onclick="joinGiveaway()">🔶 اضغط لـ المشاركة 🔶</button>` : "")}
-    </div>`;
-}
+/* ============== الروليت ============== */
+let rouletteState = { id: null };
+const RING_CIRC = 402;
 
-async function joinGiveaway(){
-  const body = {};
-  if(currentGw.antispam){
-    const cap = await askCaptcha();
-    if(!cap) return;
-    body.captcha_token = cap.token;
-    body.captcha_index = cap.index;
+function tryAutoLoadRoulette() {
+  if (startParam.startsWith("r")) {
+    const id = startParam.slice(1);
+    if (id) { loadRoulette(id); return; }
   }
-  try{
-    await api(`/api/giveaway/${currentGw.gw_code}/join`, {body});
-    toast("✅ تم التحقق وتسجيل مشاركتك بنجاح!","success");
-    tg?.HapticFeedback?.notificationOccurred("success");
-    openGiveaway();
-  }catch(e){ showError(e); }
+  $("rouletteCodeCard").style.display = "block";
 }
 
-// ---------------- 🔷 الروليت ----------------
-let currentRoulette = null;
+$("rouletteCodeGo").addEventListener("click", () => {
+  const v = $("rouletteCodeInput").value.trim();
+  if (v) loadRoulette(v);
+});
 
-async function openRoulette(){
-  const rid = $("rouletteIdInput").value.trim();
-  if(!rid) return toast("⚠️ أدخل رقم الروليت","error");
-  try{
-    currentRoulette = await api(`/api/roulette/${encodeURIComponent(rid)}`);
-    renderRoulette(currentRoulette);
-  }catch(e){
-    if(e.message === "not_found") $("rouletteResult").innerHTML =
-      `<div class="card"><div class="empty">⚠️ تعذّر تحميل الروليت</div></div>`;
-    showError(e);
+async function loadRoulette(id) {
+  rouletteState.id = id;
+  $("rouletteCodeCard").style.display = "none";
+  $("rouletteErrHint").style.display = "none";
+  $("rouletteContent").style.display = "none";
+  try {
+    const res = await fetch(`${API_BASE}/api/roulette/${encodeURIComponent(id)}?initData=${encodeURIComponent(initData)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      const errors = {
+        not_found: "هذا الروليت غير موجود.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+        unauthorized: "تعذّر التحقق من هويتك، أعد فتح الصفحة من داخل البوت.",
+      };
+      $("rouletteErrText").textContent = errors[data.error] || "تعذّر تحميل الروليت.";
+      $("rouletteErrHint").style.display = "block";
+      return;
+    }
+    renderRoulette(data);
+  } catch (e) {
+    $("rouletteErrText").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("rouletteErrHint").style.display = "block";
   }
 }
 
-function renderRoulette(r){
-  const badge = r.status === "closed" ? `<span class="badge closed">🔴 منتهي</span>` : `<span class="badge open">🟢 مفتوح</span>`;
-  const pct = Math.min(100, (r.current_count / r.target_count) * 100);
-  const parts = r.participants.length
-    ? r.participants.map((p,i)=>`<div class="list-item"><span class="rank">${i+1}</span><span class="name">${esc(p.display_name)}</span></div>`).join("")
-    : `<div class="empty">🙈 لا يوجد مشاركون بعد</div>`;
-  const winnerHtml = r.winner ? `
-    <div class="quote" style="text-align:center;margin-top:10px">
-      🏆 الفائز: <b style="color:var(--gold)">${esc(r.winner.display_name)}</b> 🥇
-    </div>` : "";
-  $("rouletteResult").innerHTML = `
-    <div class="card">
-      <div class="row"><span class="label">🔷 روليت</span><b>#${r.roulette_id}</b></div>
-      <div class="row"><span class="label">📊 الحالة</span>${badge}</div>
-      <div class="row"><span class="label">👥 المشاركون</span><b>${r.current_count} / ${r.target_count}</b></div>
-      <div class="progress"><div class="fill" style="width:${pct}%"></div></div>
-      ${winnerHtml}
-      ${r.already_joined
-        ? `<button class="btn ghost" disabled>✅ أنت مسجّل بالفعل</button>`
-        : (r.status!=="closed" ? `<button class="btn green" onclick="joinRoulette()">🔶 اضغط لـ المشاركة 🔶</button>` : "")}
-      ${r.is_owner && r.status!=="closed"
-        ? `<button class="btn red" onclick="spinRoulette(false)">🔷 تدوير الروليت 🔷</button>` : ""}
-      ${r.is_owner && r.status==="closed"
-        ? `<button class="btn red" onclick="spinRoulette(true)">↻ اختيار فائز آخر</button>` : ""}
-    </div>
-    <div class="card"><h3>👥 المشاركون</h3>${parts}</div>`;
+function renderRoulette(data) {
+  $("rouletteContent").style.display = "block";
+  const isOpen = data.status === "open";
+  $("rouletteStatusPill").textContent = isOpen ? "🟢 مفتوح" : "🔴 مغلق";
+  $("rouletteStatusPill").className = "status-pill " + (isOpen ? "status-open" : "status-closed");
+
+  $("rouletteNum").textContent = `${data.current_count}/${data.target_count}`;
+  const pct = data.target_count > 0 ? Math.min(1, data.current_count / data.target_count) : 0;
+  $("rouletteRing").style.strokeDashoffset = String(RING_CIRC * (1 - pct));
+
+  const btn = $("rouletteJoinBtn");
+  if (data.already_joined) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "✅ أنت مسجّل في هذا الروليت";
+  } else if (!isOpen) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "🔴 انتهى الروليت";
+  } else if (data.current_count >= data.target_count) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "⚠️ اكتمل العدد";
+  } else {
+    btn.disabled = false;
+    btn.className = "action";
+    btn.textContent = "🔶 اضغط لـ المشاركة 🔶";
+  }
+
+  const chipsBox = $("rouletteChips");
+  if (data.participants && data.participants.length) {
+    $("rouletteParticipantsCard").style.display = "block";
+    chipsBox.innerHTML = data.participants.map(p => `<span class="participant-chip">👤 ${escapeHtml(p.display_name)}</span>`).join("");
+  } else {
+    $("rouletteParticipantsCard").style.display = "none";
+  }
 }
 
-async function joinRoulette(){
-  try{
-    await api(`/api/roulette/${currentRoulette.roulette_id}/join`, {body:{}});
-    toast("✅ تم تسجيل مشاركتك بنجاح!","success");
-    tg?.HapticFeedback?.notificationOccurred("success");
-    openRoulette();
-  }catch(e){ showError(e); }
+$("rouletteJoinBtn").addEventListener("click", async () => {
+  if (!rouletteState.id) return;
+  $("rouletteJoinBtn").disabled = true;
+  $("rouletteMsg").textContent = "جارٍ التسجيل...";
+  try {
+    const res = await fetch(`${API_BASE}/api/roulette/${rouletteState.id}/join`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("rouletteMsg").textContent = `✅ تم تسجيل مشاركتك! (${data.current_count}/${data.target_count})`;
+      loadRoulette(rouletteState.id);
+    } else {
+      const errors = {
+        full: "⚠️ اكتمل عدد المشاركين.",
+        roulette_closed: "⚠️ انتهى هذا الروليت.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      $("rouletteMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      $("rouletteJoinBtn").disabled = false;
+    }
+  } catch (e) {
+    $("rouletteMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("rouletteJoinBtn").disabled = false;
+  }
+});
+
+/* ============== السحب ============== */
+let giveawayState = { code: null };
+
+function tryAutoLoadGiveaway() {
+  if (startParam.startsWith("g")) {
+    const code = startParam.slice(1);
+    if (code) { loadGiveaway(code); return; }
+  }
+  $("giveawayCodeCard").style.display = "block";
 }
 
-async function spinRoulette(respin){
-  try{
-    const d = await api(`/api/roulette/${currentRoulette.roulette_id}/spin`, {body:{respin}});
-    toast(`🏆 الفائز: ${d.winner.display_name} 🥳`,"success");
-    tg?.HapticFeedback?.notificationOccurred("success");
-    openRoulette();
-  }catch(e){ showError(e); }
+$("giveawayCodeGo").addEventListener("click", () => {
+  const v = $("giveawayCodeInput").value.trim();
+  if (v) loadGiveaway(v);
+});
+
+async function loadGiveaway(code) {
+  giveawayState.code = code;
+  $("giveawayCodeCard").style.display = "none";
+  $("giveawayErrHint").style.display = "none";
+  $("giveawayContent").style.display = "none";
+  try {
+    const res = await fetch(`${API_BASE}/api/giveaway/${encodeURIComponent(code)}?initData=${encodeURIComponent(initData)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      const errors = {
+        not_found: "هذا السحب غير موجود.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+        unauthorized: "تعذّر التحقق من هويتك، أعد فتح الصفحة من داخل البوت.",
+      };
+      $("giveawayErrText").textContent = errors[data.error] || "تعذّر تحميل السحب.";
+      $("giveawayErrHint").style.display = "block";
+      return;
+    }
+    renderGiveaway(data);
+  } catch (e) {
+    $("giveawayErrText").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("giveawayErrHint").style.display = "block";
+  }
 }
 
-// ---------------- 🏆 لوحة الترتيب ----------------
-async function loadLeaderboard(){
-  try{
-    const d = await api("/api/leaderboard");
-    const medals = ["🥇","🥈","🥉","🏅","🎖️"];
-    $("leaderboardList").innerHTML = d.channels.length
-      ? d.channels.map((c,i)=>`
-        <div class="list-item">
-          <span class="rank">${medals[i]}</span>
-          <span class="name">${esc(c.chat_title)}</span>
-          <span class="votes">💎 ${c.points}</span>
-        </div>`).join("")
-      : `<div class="empty">📭 لا توجد نقاط مسجلة بعد</div>`;
-  }catch(e){ showError(e); }
+function renderGiveaway(data) {
+  $("giveawayContent").style.display = "block";
+  $("giveawayTitle").textContent = "🎁 " + data.title;
+  const isOpen = data.status === "open";
+  $("giveawayStatusPill").textContent = isOpen ? "🟢 مفتوح" : "🔴 مغلق";
+  $("giveawayStatusPill").className = "status-pill " + (isOpen ? "status-open" : "status-closed");
+  $("giveawayWinnersText").textContent = `عدد الفائزين: ${data.winners_count}` +
+    (data.premium_only ? "\n💎 للمشتركين في بريميوم فقط" : "") +
+    (data.boost_required ? "\n🚀 يتطلب تعزيز القناة" : "");
+  $("giveawayParticipantsCount").textContent = data.participants_count;
+
+  const btn = $("giveawayJoinBtn");
+  if (data.already_joined) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "✅ أنت مشارك في هذا السحب";
+  } else if (!isOpen) {
+    btn.disabled = true;
+    btn.className = "action secondary";
+    btn.textContent = "🔴 انتهى السحب";
+  } else {
+    btn.disabled = false;
+    btn.className = "action";
+    btn.textContent = "🎁 شارك في السحب";
+  }
 }
 
-// ---------------- الإقلاع ----------------
-loadPoints();
+$("giveawayJoinBtn").addEventListener("click", async () => {
+  if (!giveawayState.code) return;
+  $("giveawayJoinBtn").disabled = true;
+  $("giveawayMsg").textContent = "جارٍ التسجيل...";
+  try {
+    const res = await fetch(`${API_BASE}/api/giveaway/${giveawayState.code}/join`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      $("giveawayMsg").textContent = "✅ تم تسجيل مشاركتك بنجاح!";
+      loadGiveaway(giveawayState.code);
+    } else {
+      const errors = {
+        giveaway_closed: "⚠️ انتهى هذا السحب.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+        premium_required: "💎 هذا السحب لمشتركي بريميوم فقط.",
+        host_channel_subscription_required: "❌ يجب الاشتراك في قناة السحب أولاً.",
+        condition_channel_subscription_required: "❌ يجب الاشتراك في قنوات الشرط أولاً.",
+        boost_required: "🚀 يجب تعزيز (Boost) القناة أولاً.",
+        vote_required: "🗳️ يجب التصويت للمتسابق المطلوب أولاً.",
+      };
+      $("giveawayMsg").textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      $("giveawayJoinBtn").disabled = false;
+    }
+  } catch (e) {
+    $("giveawayMsg").textContent = "تعذّر الاتصال بالسيرفر.";
+    $("giveawayJoinBtn").disabled = false;
+  }
+});
+
+/* ============== بدء التشغيل ============== */
+(async function init() {
+  await loadPoints();
+  showApp();
+
+  if (startParam.startsWith("c")) {
+    switchTab("contest");
+  } else if (startParam.startsWith("r")) {
+    switchTab("roulette");
+  } else if (startParam.startsWith("g")) {
+    switchTab("giveaway");
+  } else {
+    switchTab("points");
+  }
+})();
 </script>
 </body>
 </html>
