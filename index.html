@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VORTEX — نقاطي</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #0e0e12);
+    --text: var(--tg-theme-text-color, #ffffff);
+    --hint: var(--tg-theme-hint-color, #8a8a92);
+    --btn: var(--tg-theme-button-color, #7c5cff);
+    --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    --card: var(--tg-theme-secondary-bg-color, #1a1a22);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px;
+  }
+  .brand { text-align: center; font-size: 15px; letter-spacing: 1px; color: var(--hint); margin-bottom: 18px; }
+  .card { background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 14px; }
+  .balance-label { color: var(--hint); font-size: 13px; margin-bottom: 6px; }
+  .balance-value { font-size: 38px; font-weight: 700; }
+  .progress-wrap { margin-top: 14px; }
+  .progress-bar-bg { background: rgba(255,255,255,0.08); border-radius: 10px; height: 10px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--btn); border-radius: 10px; transition: width .4s ease; }
+  .progress-text { color: var(--hint); font-size: 12px; margin-top: 6px; }
+  .conditions { font-size: 13px; color: var(--hint); line-height: 1.9; white-space: pre-wrap; }
+  .status-pill { display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 20px; margin-top: 8px; }
+  .status-pending { background: rgba(255,193,7,0.15); color: #ffc107; }
+  .status-done { background: rgba(76,175,80,0.15); color: #4caf50; }
+  button.action { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; background: var(--btn); color: var(--btn-text); margin-top: 4px; }
+  button.action:disabled { opacity: .5; }
+  .msg { text-align: center; color: var(--hint); font-size: 13px; margin-top: 10px; min-height: 18px; }
+  .loading { text-align: center; color: var(--hint); padding: 40px 0; }
+</style>
+</head>
+<body>
+
+<div class="brand">𝚁𝙾𝚄𝙻𝙴𝚃𝚃𝙴 𝚅𝙾𝚁𝚃𝙴𝚇 — نقاطي</div>
+
+<div id="loading" class="loading">جارٍ تحميل رصيدك...</div>
+
+<div id="content" style="display:none">
+  <div class="card">
+    <div class="balance-label" id="titleLabel">رصيدك الحالي</div>
+    <div class="balance-value"><span id="pointsValue">0</span> نقطة</div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-text" id="progressText"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="conditions" id="conditionsText"></div>
+  </div>
+
+  <div class="card" id="requestCard" style="display:none">
+    <div class="balance-label">آخر طلب سحب</div>
+    <div id="requestAmount"></div>
+    <span class="status-pill" id="requestStatus"></span>
+  </div>
+
+  <button class="action" id="withdrawBtn">طلب السحب</button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<script>
+// ⚠️ غيّر هذا لعنوان webapp_server.py بعد رفعه (لازم HTTPS)
+const API_BASE = "https://YOUR-DOMAIN-OR-SERVER.example.com";
+
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+
+const initData = tg.initData || "";
+const els = {
+  loading: document.getElementById("loading"),
+  content: document.getElementById("content"),
+  points: document.getElementById("pointsValue"),
+  title: document.getElementById("titleLabel"),
+  fill: document.getElementById("progressFill"),
+  progressText: document.getElementById("progressText"),
+  conditions: document.getElementById("conditionsText"),
+  requestCard: document.getElementById("requestCard"),
+  requestAmount: document.getElementById("requestAmount"),
+  requestStatus: document.getElementById("requestStatus"),
+  withdrawBtn: document.getElementById("withdrawBtn"),
+  msg: document.getElementById("msg"),
+};
+
+let state = null;
+
+async function loadPoints() {
+  try {
+    const res = await fetch(`${API_BASE}/api/points?initData=${encodeURIComponent(initData)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      els.loading.textContent = data.error === "banned"
+        ? "🚫 تم حظرك من استخدام البوت."
+        : "تعذّر التحقق من هويتك. أعد فتح الصفحة من داخل البوت.";
+      return;
+    }
+    state = data;
+    render();
+  } catch (e) {
+    els.loading.textContent = "تعذّر الاتصال بالسيرفر. حاول لاحقًا.";
+  }
+}
+
+function render() {
+  els.loading.style.display = "none";
+  els.content.style.display = "block";
+
+  els.title.textContent = state.title;
+  els.points.textContent = state.points;
+  els.conditions.textContent = "📌 الشروط:\n" + state.conditions;
+
+  if (state.required > 0) {
+    const pct = Math.min(100, Math.round((state.points / state.required) * 100));
+    els.fill.style.width = pct + "%";
+    els.progressText.textContent = `${state.points} / ${state.required} نقطة للوصول للمكافأة`;
+  } else {
+    document.getElementById("progressWrap").style.display = "none";
+  }
+
+  if (state.latest_request) {
+    els.requestCard.style.display = "block";
+    els.requestAmount.textContent = `💎 ${state.latest_request.points_amount} نقطة`;
+    const isPending = state.latest_request.status === "pending";
+    els.requestStatus.textContent = isPending ? "🟡 قيد الانتظار" : "🟢 مكتمل";
+    els.requestStatus.className = "status-pill " + (isPending ? "status-pending" : "status-done");
+  }
+
+  if (state.pending) {
+    els.withdrawBtn.textContent = "🟡 طلب السحب قيد الانتظار";
+    els.withdrawBtn.disabled = true;
+  } else if (state.eligible) {
+    els.withdrawBtn.textContent = `✅ سحب ${state.points} نقطة`;
+    els.withdrawBtn.disabled = false;
+  } else {
+    els.withdrawBtn.textContent = `🔒 سحب (${state.points}/${state.required})`;
+    els.withdrawBtn.disabled = true;
+  }
+}
+
+els.withdrawBtn.addEventListener("click", async () => {
+  if (!state || !state.eligible) return;
+  els.withdrawBtn.disabled = true;
+  els.msg.textContent = "جارٍ إرسال الطلب...";
+  try {
+    const res = await fetch(`${API_BASE}/api/withdraw`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      tg.HapticFeedback.notificationOccurred("success");
+      els.msg.textContent = "✅ تم إرسال طلب السحب بنجاح.";
+      await loadPoints();
+    } else {
+      const errors = {
+        username_required: "يجب أن يكون لديك يوزر تليجرام (@username) قبل السحب.",
+        already_pending: "لديك طلب سحب قيد الانتظار بالفعل.",
+        not_eligible: "لم تصل بعد للحد المطلوب.",
+        banned: "🚫 تم حظرك من استخدام البوت.",
+      };
+      els.msg.textContent = errors[data.error] || "حدث خطأ، حاول لاحقًا.";
+      els.withdrawBtn.disabled = false;
+    }
+  } catch (e) {
+    els.msg.textContent = "تعذّر الاتصال بالسيرفر.";
+    els.withdrawBtn.disabled = false;
+  }
+});
+
+loadPoints();
+</script>
+</body>
+</html>
