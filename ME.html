@@ -92,6 +92,8 @@ textarea{resize:vertical;margin-top:8px}
 .warn{margin-top:6px;padding:14px 16px;border-radius:14px;border:1px solid var(--r1);background:color-mix(in srgb,var(--r1) 13%,var(--sf))}
 .warn strong{display:block;color:var(--r1);margin-bottom:2px}
 .warn p{margin:0 0 10px;font-size:.9rem}
+.warn.soft{border-color:var(--am);background:color-mix(in srgb,var(--am) 13%,var(--sf))}
+.warn.soft strong{color:var(--am)}
 .tabs button.gear{flex:0 0 36px;width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:10px;color:var(--mu)}
 .gear svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 dialog{width:min(92vw,420px);padding:20px;border:1px solid var(--ln);border-radius:18px;background:var(--sf);color:var(--ink)}
@@ -204,7 +206,14 @@ try{const r=JSON.parse(localStorage.getItem('trk1'));if(r&&r.days)db=r}catch(e){
 const FS='showSaveFilePicker' in window;
 let fh=null,ls=FS?'load':'none';
 const setSt=t=>{$('st').textContent=t};
-const idb=(m,k,v)=>new Promise(res=>{try{const o=indexedDB.open('trkh',1);o.onupgradeneeded=()=>o.result.createObjectStore('s');o.onsuccess=()=>{const s=o.result.transaction('s',m==='get'?'readonly':'readwrite').objectStore('s'),r=m==='get'?s.get(k):s.put(v,k);r.onsuccess=()=>res(r.result);r.onerror=()=>res()};o.onerror=()=>res()}catch(e){res()}});
+const idb=(m,k,v)=>new Promise(res=>{
+  try{
+    const o=indexedDB.open('trkh',1);
+    o.onupgradeneeded=()=>o.result.createObjectStore('s');
+    o.onsuccess=()=>{try{const s=o.result.transaction('s',m==='get'?'readonly':'readwrite').objectStore('s'),r=m==='get'?s.get(k):s.put(v,k);r.onsuccess=()=>res(r.result);r.onerror=()=>res()}catch(e){res()}};
+    o.onerror=()=>res();
+  }catch(e){res()}
+});
 async function writeFile(){
   if(!fh)return;
   try{
@@ -357,7 +366,8 @@ async function linkFile(){
     if(fh&&ls==='need'){if(await fh.requestPermission({mode:'readwrite'})==='granted')await syncFromFile(false);return}
     const h=await showSaveFilePicker({suggestedName:'tracker-data.json',types:[{description:'ملف بيانات',accept:{'application/json':['.json']}}]});
     fh=h;await idb('put','fh',h);
-    await syncFromFile(true);
+    if(!(await idb('get','fh')))setSt('تنبيه: المتصفح لم يحفظ ربط الملف، فسيلزم ربطه من جديد في كل زيارة.');
+    await syncFromFile();
   }catch(e){if(e&&e.name!=='AbortError')setSt('تعذر ربط الملف.')}
 }
 const acts={
@@ -379,9 +389,10 @@ function renderLink(){
   if(!w.hidden){
     let m,b;
     if(!FS){m='بياناتك محفوظة في متصفحك فقط، ومتصفحك لا يدعم الربط بملف. قد تضيع إذا مُسحت بيانات المتصفح، فخذ نسخة احتياطية باستمرار.';b=B('exp','نسخ احتياطي')+B('imp','استرجاع نسخة')}
-    else if(ls==='need'){m=`الملف «${nm}» مربوط لكنه يحتاج إذنك للحفظ فيه. إلى أن تسمح، بياناتك الجديدة محفوظة في المتصفح فقط.`;b=B('link','السماح بالحفظ',1)+B('exp','نسخ احتياطي')+B('imp','استرجاع نسخة')}
+    else if(ls==='need'){m=`المتصفح يطلب إذنك مرة في كل زيارة لإعادة الحفظ في الملف «${nm}». بياناتك محفوظة في المتصفح وستُزامن مع الملف بعد السماح.`;b=B('link','السماح بالحفظ',1)}
     else{m='بياناتك غير مربوطة بملف. هي محفوظة في المتصفح فقط وقد تضيع إذا مُسحت بيانات المتصفح.';b=B('link','ربط ملف بياناتك',1)+B('exp','نسخ احتياطي')+B('imp','استرجاع نسخة')}
-    w.innerHTML=`<strong>تحذير</strong><p>${m}</p><div class="tools">${b}</div>`;
+    w.className='warn'+(ls==='need'?' soft':'');
+    w.innerHTML=`<strong>${ls==='need'?'يحتاج إذنك':'تحذير'}</strong><p>${m}</p><div class="tools">${b}</div>`;
   }
   const ok=ls==='ok';
   $('ds').innerHTML=`<span class="dot" style="background:${ok?'var(--r5)':'var(--r1)'}"></span>${ok?'مربوط بالملف: '+nm:ls==='need'?'الملف مربوط ويحتاج إذنك':'غير مربوط بملف'}<div class="mu" style="font-weight:400;margin-top:4px">${lb()?'آخر نسخة احتياطية: '+new Date(lb()).toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long'}):'لم تأخذ نسخة احتياطية بعد'}</div>`;
