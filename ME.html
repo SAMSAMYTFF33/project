@@ -213,21 +213,23 @@ async function writeFile(){
     ls='ok';setSt('آخر حفظ في الملف: '+new Date().toLocaleTimeString('ar-u-nu-latn',{hour:'2-digit',minute:'2-digit'}));renderLink();
   }catch(e){ls='need';renderLink();setSt('تعذر الكتابة في الملف.')}
 }
-async function syncFromFile(ask){
+async function syncFromFile(){
   try{
     const t=await(await fh.getFile()).text();let j=null;
     try{j=JSON.parse(t)}catch(_){}
-    if(j&&j.days&&Object.keys(j.days).length){
-      if(ask&&Object.keys(db.days).length&&!confirm('الملف فيه بيانات سابقة. تحميلها يستبدل بيانات هذه الصفحة. هل تريد المتابعة؟')){fh=null;ls='none';await idb('put','fh',null);renderLink();return}
-      db=j;try{localStorage.setItem('trk1',JSON.stringify(db))}catch(e){}
-      ls='ok';render();setSt('تم تحميل بياناتك من الملف.');
-    }else await writeFile();
+    if(j&&j.days){
+      const m={...j.days};
+      for(const k in db.days){const x=db.days[k],y=m[k];if(!y||(x.u||0)>=(y.u||0))m[k]=x}
+      db={days:m};try{localStorage.setItem('trk1',JSON.stringify(db))}catch(e){}
+      render();
+    }
+    await writeFile();
   }catch(e){ls='need';renderLink();setSt('تعذر قراءة الملف.')}
 }
 const save=()=>{try{localStorage.setItem('trk1',JSON.stringify(db))}catch(e){}writeFile()};
 
 /* الحسابات */
-const day=k=>db.days[k]||(db.days[k]={p:{},l:[],r:0,n:''});
+const day=k=>{const d=db.days[k]||(db.days[k]={p:{},l:[],r:0,n:''});d.u=Date.now();return d};
 const hrs=d=>((d&&d.l)||[]).reduce((s,x)=>s+(+x.h||0),0);
 function parts(k){
   const d=db.days[k]||{p:{},l:[]};let p=0;
@@ -341,10 +343,14 @@ $('file').onchange=e=>{
   };
   r.readAsText(f);e.target.value='';
 };
+const lb=()=>{try{return +localStorage.getItem('trkb')||0}catch(e){return 0}};
+const fresh=()=>Date.now()-lb()<7*864e5;
 function exportDb(){
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:'application/json'}));
   a.download='tracker-backup-'+today()+'.json';a.click();
+  try{localStorage.setItem('trkb',Date.now())}catch(e){}
+  renderLink();
 }
 async function linkFile(){
   try{
@@ -361,9 +367,15 @@ const acts={
   close:()=>$('dlg').close()
 };
 $('dlg').addEventListener('click',e=>{if(e.target===$('dlg'))$('dlg').close()});
+let tried=false;
+document.addEventListener('click',async e=>{
+  if(tried||ls!=='need'||!fh||e.target.closest('[data-act]'))return;
+  tried=true;
+  try{if(await fh.requestPermission({mode:'readwrite'})==='granted')await syncFromFile()}catch(_){}
+},true);
 function renderLink(){
   const nm=fh?esc(fh.name):'',B=(a,t,pr)=>`<button class="btn ${pr?'':'o'}" data-act="${a}">${t}</button>`,w=$('warn');
-  w.hidden=ls==='ok'||ls==='load';
+  w.hidden=ls==='ok'||ls==='load'||(ls!=='need'&&fresh());
   if(!w.hidden){
     let m,b;
     if(!FS){m='بياناتك محفوظة في متصفحك فقط، ومتصفحك لا يدعم الربط بملف. قد تضيع إذا مُسحت بيانات المتصفح، فخذ نسخة احتياطية باستمرار.';b=B('exp','نسخ احتياطي')+B('imp','استرجاع نسخة')}
@@ -372,7 +384,7 @@ function renderLink(){
     w.innerHTML=`<strong>تحذير</strong><p>${m}</p><div class="tools">${b}</div>`;
   }
   const ok=ls==='ok';
-  $('ds').innerHTML=`<span class="dot" style="background:${ok?'var(--r5)':'var(--r1)'}"></span>${ok?'مربوط بالملف: '+nm:ls==='need'?'الملف مربوط ويحتاج إذنك':'غير مربوط بملف'}`;
+  $('ds').innerHTML=`<span class="dot" style="background:${ok?'var(--r5)':'var(--r1)'}"></span>${ok?'مربوط بالملف: '+nm:ls==='need'?'الملف مربوط ويحتاج إذنك':'غير مربوط بملف'}<div class="mu" style="font-weight:400;margin-top:4px">${lb()?'آخر نسخة احتياطية: '+new Date(lb()).toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long'}):'لم تأخذ نسخة احتياطية بعد'}</div>`;
   $('dc').innerHTML=(FS?B('link',ok?'تغيير الملف':ls==='need'?'السماح بالحفظ':'ربط ملف بياناتك',!ok):'')+B('exp','نسخ احتياطي')+B('imp','استرجاع نسخة')+(fh?B('unlink','فك الربط'):'');
 }
 
