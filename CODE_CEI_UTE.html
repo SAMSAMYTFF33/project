@@ -14,21 +14,22 @@ html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Cairo",system-ui,"Segoe UI",Tahoma,sans-serif;line-height:1.8}
 main{max-width:600px;margin:0 auto;padding:20px 16px 32px}
 .head{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 12px}
-h1{font-size:1.15rem;margin:0;font-weight:800;direction:ltr;letter-spacing:-.01em}
-.count{direction:ltr;font-weight:700;color:var(--mute);font-size:.95rem;font-variant-numeric:tabular-nums}
+h1{font-size:1.15rem;margin:0;font-weight:800;direction:ltr}
+.count{direction:ltr;font-weight:700;color:var(--mute);font-size:.95rem}
 .stage{background:var(--card);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
 .panel{background:var(--panel);padding:22px 12px 10px}
 .code{direction:ltr;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font:800 1.7rem/1.2 "Cairo",system-ui,sans-serif}
-.seg{position:relative;padding:2px 3px 16px;color:#b9c6ee;transition:color .45s ease,transform .45s ease}
-.seg::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:10px;border:2.5px solid #ffd24a;border-top:0;border-radius:0 0 10px 10px;transform:scaleX(.2);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .35s}
+.seg{position:relative;padding:2px 3px 16px;color:#b9c6ee;transition:color .45s,transform .45s}
+.seg::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:10px;border:2.5px solid #ffd24a;border-top:0;border-radius:0 0 10px 10px;transform:scaleX(.2);opacity:0;transition:transform .5s,opacity .35s}
 .code.all .seg{color:#fff}
 .seg.on{color:#ffd24a;transform:translateY(-3px)}
 .seg.on::after{transform:scaleX(1);opacity:1}
 .body{padding:16px 18px 20px}
-.scene{display:flex;justify-content:center;min-height:0}
+.scene{display:flex;justify-content:center}
 .scene svg{color:var(--navy);display:block}
 .explain h2{font-size:1.25rem;margin:8px 0 8px;color:var(--navy);font-weight:800;direction:ltr;text-align:right}
-.explain p{margin:0;font-size:1.12rem;line-height:1.95}
+.explain p{margin:0 0 10px;font-size:1.08rem;line-height:1.95}
+.explain p.k{background:var(--chip);border-radius:12px;padding:8px 12px;font-weight:600}
 .chips{display:grid;gap:9px;margin-top:16px}
 .chip{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:var(--chip);border-radius:14px;padding:9px 14px;direction:ltr}
 .chip .l{font:800 1.8rem/1 "Cairo",sans-serif;min-width:1.4em;text-align:center;color:var(--c)}
@@ -38,16 +39,15 @@ h1{font-size:1.15rem;margin:0;font-weight:800;direction:ltr;letter-spacing:-.01e
 .chip svg{display:block;color:var(--navy)}
 .bar{display:flex;gap:4px;margin:18px 2px 14px}
 .bar span{flex:1;height:5px;border-radius:3px;background:var(--line);position:relative;overflow:hidden}
-.bar span::after{content:"";position:absolute;inset:0;background:var(--navy);transform:scaleX(0);transform-origin:right;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.bar span::after{content:"";position:absolute;inset:0;background:var(--navy);transform:scaleX(0);transform-origin:right;transition:transform .5s}
 .bar span.done::after{transform:scaleX(1)}
 .ctl{display:flex;gap:10px}
-button{font:inherit;font-weight:700;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 16px;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,background .2s,border-color .2s}
+button{flex:1;font:inherit;font-weight:700;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 16px;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px}
+#next{background:var(--navy);color:var(--on);border-color:var(--navy)}
 button:active{transform:scale(.97)}
 button:disabled{opacity:.4;cursor:default}
 button:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
 button svg{width:20px;height:20px;flex:none}
-#play{flex:1;background:var(--navy);color:var(--on);border-color:var(--navy);font-size:1.02rem}
-.note{color:var(--mute);font-size:.88rem;margin:14px 2px 0;line-height:1.7}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -58,35 +58,32 @@ button svg{width:20px;height:20px;flex:none}
     <div class="panel"><div class="code" id="code"></div></div>
     <div class="body">
       <div class="scene" id="scene"></div>
-      <div class="explain" id="explain"><h2 id="t"></h2><p id="p"></p><div class="chips" id="chips"></div></div>
+      <div class="explain"><h2 id="t"></h2><div id="p"></div><div class="chips" id="chips"></div></div>
     </div>
   </section>
   <div class="bar" id="bar"></div>
   <div class="ctl">
     <button id="prev" aria-label="Précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>السابق</button>
-    <button id="play"><svg id="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span id="pl">تشغيل</span></button>
     <button id="next" aria-label="Suivant">التالي<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
   </div>
-  <p class="note" id="note"></p>
 </main>
 <script>
 var UTE=["NF-USE","-","IRO","5","-PE","21","000"],CEI=["NF-USE","40","(IRO)","305"],MRB=["M","R","B","9","A","P","E"];
 var DARK=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;
-var COL=DARK?["#ff8a8f","#5fd68a","#8fb0ff","#ffb066","#d9a0ff","#5fe0e0","#ff8fc0","#7cc4ff","#ffa070"]:["#c4161f","#14702f","#1f4fc9","#a8520a","#7a24a6","#077070","#a4235e","#0b5cad","#8a3b0b"];
+var COL=DARK?["#ff8a8f","#5fd68a","#8fb0ff","#ffb066","#d9a0ff","#5fe0e0","#ff8fc0"]:["#c4161f","#14702f","#1f4fc9","#a8520a","#7a24a6","#077070","#a4235e"];
 function P(f,rib,x){return '<svg viewBox="0 0 64 30" width="64" height="30"><rect x="3" y="8" width="50" height="14" rx="3" fill="'+f+'" stroke="#0006"/>'+(rib?'<path d="M9 8v14M15 8v14M21 8v14M27 8v14M33 8v14M39 8v14M45 8v14" stroke="#0008"/>':'')+'<ellipse cx="53" cy="15" rx="4" ry="7" fill="'+f+'" stroke="#0006"/><ellipse cx="53" cy="15" rx="2" ry="4.5" fill="#0005"/>'+(x||'')+'</svg>'}
 function V(i){return '<svg viewBox="0 0 64 30" width="64" height="30">'+i+'</svg>'}
-var AR='<path d="M30 0v6m-3-3 3 3 3-3" stroke="#e0242c" stroke-width="2" fill="none"/>';
 function bars(n){var s='';for(var k=0;k<4;k++)s+='<rect x="'+(8+k*13)+'" y="'+(24-(k+1)*5)+'" width="9" height="'+((k+1)*5)+'" rx="1.5" fill="'+(k<n?"#e0242c":"#8f98b3")+'"/>';return V(s)}
 var CV='<path d="M6 25Q30 -3 56 20" fill="none" stroke="#c4c9d2" stroke-width="10" stroke-linecap="round"/>';
+var AR='<path d="M30 0v6m-3-3 3 3 3-3" stroke="#e0242c" stroke-width="2" fill="none"/>';
 var IC={I:P("#d7dae0",0,'<text x="22" y="7" font-size="9">⚡</text>'),M:P("#9aa7b8",1),R:P("#c4c9d2",0),C:V(CV),
 S:V(CV+'<path d="M6 25Q30 -3 56 20" fill="none" stroke="#0008" stroke-width="10" stroke-dasharray="1.5 4"/>'),
 B:P("#3b4352",0,'<path d="M3 8h50M3 22h50" stroke="#e5b23a" stroke-width="2"/>'),
-D:P("#c4c9d2",0,AR+'<path d="M24 8Q30 13 36 8" stroke="#0009" fill="none"/>'),
-O:P("#c4c9d2",0,'<path d="M30 1v5m-2-2 2 2 2-2" stroke="#e0242c" fill="none"/>'),T:P("#8b8f99",1,AR),
+D:P("#c4c9d2",0,AR),O:P("#c4c9d2",0,'<path d="M30 1v5m-2-2 2 2 2-2" stroke="#e0242c" fill="none"/>'),T:P("#8b8f99",1,AR),
 P:V('<text x="18" y="24" font-size="22">🔥</text><path d="M10 28L54 3" stroke="#e0242c" stroke-width="3"/>'),
 E:V('<text x="18" y="24" font-size="22">💧</text><path d="M44 12l5 6 9-11" stroke="#1f9a4d" stroke-width="3" fill="none"/>'),
 A:V('<text x="16" y="24" font-size="22">🧪</text><path d="M44 12l5 6 9-11" stroke="#1f9a4d" stroke-width="3" fill="none"/>'),
-"5":bars(1),"6":bars(2),"7":bars(3),"9":bars(4),
+"3":bars(2),"5":bars(1),"6":bars(2),"7":bars(3),"9":bars(4),
 ref:V('<rect x="8" y="5" width="48" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><text x="32" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">21</text>'),
 fab:V('<text x="18" y="25" font-size="22">🏭</text>'),
 tmp:V('<text x="4" y="24" font-size="20">🌡️</text><text x="28" y="14" font-size="9" fill="#5b8cff">-5°C</text><text x="28" y="26" font-size="9" fill="#ff6b73">+60°C</text>')};
@@ -96,19 +93,20 @@ dia:'<svg viewBox="0 0 120 60" width="220" height="110"><rect x="14" y="16" widt
 function chip(l,fr,ar,ic){return {l:l,fr:fr,ar:ar,ic:ic}}
 var T=[chip("I","[I]SOLANT","عازل","I"),chip("M","[M]ÉTALLIQUE","معدني","M"),chip("C","[C]INTRABLE","قابل للثني","C"),chip("R","[R]IGIDE","صلب","R"),chip("S","[S]OUPLE","مرن","S"),chip("B","[B]LINDÉ","مدرّع، الأقوى","B"),chip("D","[D]ÉFORMABLE","قابل للتشوّه","D"),chip("O","[O]RDINAIRE","عادي","O"),chip("T","[T]RANSVERSALEMENT ÉLASTIQUE","مرن عرضياً","T")];
 var S=[
-{c:UTE,all:1,sc:"pipe",t:"Le conduit et sa désignation",p:"كل conduit، أي أنبوب حماية les câbles، له désignation مكوّنة من رموز. هذا مثال بنظام UTE. سنقرؤه جزءاً جزءاً."},
-{c:UTE,h:[0],sc:"nf",t:"NF-USE : la marque",p:"NF-USE هي marque de conformité، أي علامة مطابقة المعايير الفرنسية."},
-{c:UTE,h:[2],t:"IRO : nature du conduit",p:"ثلاثة أحرف: I للعزل isolement، ثم R لطريقة التركيب mise en œuvre، ثم O لمقاومة السحق résistance à l’écrasement.",ch:T},
-{c:UTE,h:[3],t:"5 : résistance mécanique",p:"الرقم 5 هو degré de résistance mécanique. القيم 5 و6 و7 و9، وكلما كبر الرقم زادت المقاومة.",ch:[chip("5","Choc : degré 5","الأضعف","5"),chip("6","Choc : degré 6","","6"),chip("7","Choc : degré 7","","7"),chip("9","Choc : degré 9","الأقوى","9")]},
-{c:UTE,h:[4],t:"P et E",p:"P معناه non propagateur de la flamme، أي لا ينشر اللهب. وE معناه étanche، أي محكم ضد الماء.",ch:[chip("P","non [P]ROPAGATEUR de la flamme","لا ينشر اللهب","P"),chip("E","[É]TANCHE","محكم ضد الماء","E")]},
-{c:UTE,h:[5,6],t:"Référence et fabricant",p:"21 هو numéro de référence du conduit، رقم المرجع. وثلاثة أصفار هي identification du constructeur، أي رمز الشركة المصنّعة.",ch:[chip("21","[R]ÉFÉRENCE du conduit","رقم المرجع","ref"),chip("000","[C]ONSTRUCTEUR","رمز المصنّع","fab")]},
-{c:CEI,all:1,sc:"pipe",t:"Le code CEI",p:"النظام الدولي code CEI يكتب الاسم بطريقة أخرى. هذا مثاله."},
-{c:CEI,h:[1,2],sc:"dia",t:"40 et (IRO)",p:"40 هو diamètre extérieur بالمليمتر، من 16 إلى 63. والأحرف بين القوسين هي nature du conduit، IRO كما سبق."},
-{c:CEI,h:[3],t:"305 : trois chiffres",p:"الرقم الأول 3 معناه contrainte mécanique moyenne، صدمات متوسطة. و5 معناه très forte. أما 05 فهي tenue aux températures.",ch:[chip("3","[3] = [M]OYENNE","صدمات متوسطة","6"),chip("5","[5] = TRÈS [F]ORTE","صدمات قوية جداً","9"),chip("05","−5°C à +60°C","تحمّل الحرارة","tmp")]},
-{c:MRB,all:1,t:"Exemple : MRB9APE",p:"M métallique. R rigide. B blindé. 9 degré de résistance mécanique. A résistant aux agents chimiques. P non propagateur de la flamme. E étanche.",ch:[chip("M","[M]ÉTALLIQUE","معدني","M"),chip("R","[R]IGIDE","صلب","R"),chip("B","[B]LINDÉ","مدرّع","B"),chip("9","Choc : degré [9]","أقوى مقاومة","9"),chip("A","[A]GENTS chimiques","مقاوم للمواد الكيميائية","A"),chip("P","non [P]ROPAGATEUR de la flamme","لا ينشر اللهب","P"),chip("E","[É]TANCHE","محكم","E")]},
-{c:UTE,all:1,sc:"pipe",t:"Le tableau final",p:"le tableau في المستند يربط كل désignation بالشكل الحقيقي وبمكان الاستعمال. مثلاً MRB9-PE هو conduit en acier للمصانع التي فيها خطر chocs mécaniques. وهكذا تعرف le conduit من اسمه."}
+{c:UTE,all:1,sc:"pipe",t:"Le conduit et sa désignation",p:["كل conduit (أنبوب حماية الكابلات) له désignation (تسمية) مكوّنة من رموز. هذا مثال بنظام UTE. سنقرؤه جزءاً جزءاً."]},
+{c:UTE,h:[0],sc:"nf",t:"NF-USE : la marque",p:["NF-USE هي marque de conformité (علامة المطابقة)، أي علامة مطابقة المعايير الفرنسية."]},
+{c:UTE,h:[2],t:"IRO : nature du conduit",p:["ثلاثة أحرف: I للعزل isolement (العزل)، ثم R لطريقة التركيب mise en œuvre (التنفيذ)، ثم O لمقاومة السحق résistance à l’écrasement (مقاومة السحق)."],ch:T},
+{c:UTE,h:[3],t:"5 : résistance mécanique",p:["الرقم 5 هو degré de résistance mécanique (درجة المقاومة الميكانيكية). القيم 5 و6 و7 و9، وكلما كبر الرقم زادت المقاومة."],ch:[chip("5","Choc : degré 5","الأضعف","5"),chip("6","Choc : degré 6","","6"),chip("7","Choc : degré 7","","7"),chip("9","Choc : degré 9","الأقوى","9")]},
+{c:UTE,h:[4],t:"P et E",p:["P معناه non propagateur de la flamme (لا ينشر اللهب). وE معناه étanche (محكم ضد الماء)."],ch:[chip("P","non [P]ROPAGATEUR de la flamme","لا ينشر اللهب","P"),chip("E","[É]TANCHE","محكم ضد الماء","E")]},
+{c:UTE,h:[5,6],t:"Référence et fabricant",p:["21 هو numéro de référence du conduit (رقم مرجع الأنبوب). وثلاثة أصفار هي identification du constructeur (تعريف المصنّع)، أي رمز الشركة المصنّعة."],ch:[chip("21","[R]ÉFÉRENCE du conduit","رقم المرجع","ref"),chip("000","[C]ONSTRUCTEUR","رمز المصنّع","fab")]},
+{c:CEI,all:1,sc:"pipe",t:"Le code CEI",p:["النظام الدولي code CEI (رمز اللجنة الكهروتقنية الدولية) يكتب الاسم بطريقة أخرى، وأقصر.","يُقرأ من اليسار إلى اليمين بأربعة أجزاء: العلامة، ثم القطر، ثم نوع الأنبوب بين قوسين، ثم رمز المقاومة الرقمي.","الفرق عن UTE: هنا القطر مكتوب صراحة، والمقاومة والحرارة مجموعتان في رمز رقمي واحد بدل حرف ورقم متفرقين."]},
+{c:CEI,h:[1],sc:"dia",t:"40 : le diamètre",p:["40 هو diamètre extérieur (القطر الخارجي) مقاساً بالمليمتر، أي 40 mm.","الأقطار المتاحة تتراوح من 16 إلى 63 مم. وكلما كبر القطر استوعب الأنبوب عدداً أكبر من الكابلات.","يُقاس القطر من الخارج، لذلك يجب اختياره أكبر من حزمة الكابلات التي ستمر داخله."]},
+{c:CEI,h:[2],t:"(IRO) : nature du conduit",p:["الأحرف بين القوسين هي نفسها التي قرأناها في نظام UTE، وتصف nature du conduit (طبيعة الأنبوب).","I : isolant (عازل). R : rigide (صلب). O : ordinaire (مقاومة سحق عادية).","إذن (IRO) أنبوب عازل، صلب، بمقاومة سحق عادية. الأقواس فقط تفصل هذا الجزء عن الأرقام."],ch:[chip("I","[I]SOLANT","عازل","I"),chip("R","[R]IGIDE","صلب","R"),chip("O","[O]RDINAIRE","عادي","O")]},
+{c:CEI,h:[3],t:"305 : trois chiffres",p:["305 رمز من ثلاثة أرقام يقدّم معلومتين: المقاومة الميكانيكية ثم الحرارة.","الرقم الأول 3 هو contrainte mécanique (الإجهاد الميكانيكي) بدرجة moyenne (متوسطة): الأنبوب يتحمل صدمات وضغطاً متوسطين. السلّم يصل إلى 5 وهي très forte (قوية جداً).","الرقمان 05 يخصان tenue aux températures (تحمّل الحرارة): من −5°C إلى +60°C، وهو المجال الذي يمكن فيه تركيب الأنبوب واستعماله.","الخلاصة: مقاومة متوسطة في مجال حرارة عادي. يصلح لتمديدات عادية، لا لمكان فيه صدمات قوية."],ch:[chip("3","[3] = [M]OYENNE","صدمات متوسطة","3"),chip("5","[5] = TRÈS [F]ORTE","أعلى درجة في السلّم","9"),chip("05","−5°C à +60°C","تحمّل الحرارة","tmp")]},
+{c:MRB,all:1,t:"Exemple : MRB9APE",p:["هذا مثال تُقرأ فيه الأحرف واحداً واحداً من اليسار إلى اليمين، وكل حرف يعطي خاصية.","المادة: M métallique (معدني)، R rigide (صلب)، B blindé (مدرّع، أي محمي بغلاف قوي).","الأداء: 9 هي degré de résistance mécanique (درجة المقاومة الميكانيكية) وهي الأعلى. A معناه résistant aux agents chimiques (مقاوم للمواد الكيميائية).","الحماية: P non propagateur de la flamme (لا ينشر اللهب)، وE étanche (محكم ضد الماء)."],ch:[chip("M","[M]ÉTALLIQUE","معدني","M"),chip("R","[R]IGIDE","صلب","R"),chip("B","[B]LINDÉ","مدرّع","B"),chip("9","Choc : degré [9]","أقوى مقاومة","9"),chip("A","[A]GENTS chimiques","مقاوم للمواد الكيميائية","A"),chip("P","non [P]ROPAGATEUR de la flamme","لا ينشر اللهب","P"),chip("E","[É]TANCHE","محكم","E")]},
+{c:UTE,all:1,sc:"pipe",t:"Le tableau final",p:["le tableau (الجدول) في المستند يربط كل désignation (تسمية) بالشكل الحقيقي للأنبوب وبمكان استعماله.","مثال: MRB9-PE هو conduit en acier (أنبوب من الفولاذ). مقاومته الميكانيكية 9، لا ينشر اللهب ومحكم ضد الماء. يُستعمل في المصانع حيث يوجد risque de chocs mécaniques (خطر الصدمات الميكانيكية).","بالمقابل، IRO5-PE أنبوب عازل صلب بمقاومة 5 وهي الأضعف. يناسب أماكن بلا صدمات قوية، مثل التمديدات داخل المباني.","طريقة سريعة للقراءة: 1) انظر إلى المادة (M أو I). 2) انظر إلى درجة المقاومة (من 5 إلى 9). 3) انظر إلى الخصائص الإضافية (P، E، A). بهذا تعرف الأنبوب من اسمه."]}
 ];
-var i=0,playing=false,tm=null,tok=0,$=function(x){return document.getElementById(x)},bar=$("bar");
+var i=0,$=function(x){return document.getElementById(x)},bar=$("bar");
 var calm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 S.forEach(function(){bar.appendChild(document.createElement("span"))});
 function frHtml(s){return s.replace(/\[(.+?)\]/g,"<i>$1</i>")}
@@ -119,57 +117,27 @@ function render(dir){
   s.c.forEach(function(v,k){var e=document.createElement("span");e.className="seg";e.textContent=v;code.appendChild(e);
     if(s.h&&s.h.indexOf(k)>-1)setTimeout(function(){e.classList.add("on")},60)});
   $("scene").innerHTML=s.sc?SC[s.sc]:"";
-  $("t").textContent=s.t;$("p").textContent=s.p;
+  $("t").textContent=s.t;
+  var pb=$("p");pb.innerHTML="";
+  s.p.forEach(function(tx,k){var e=document.createElement("p");if(k===s.p.length-1&&s.p.length>2)e.className="k";e.textContent=tx;pb.appendChild(e)});
   var ch=$("chips");ch.innerHTML="";
   (s.ch||[]).forEach(function(c,k){
     var d=document.createElement("div");d.className="chip";d.style.setProperty("--c",COL[k%COL.length]);
     d.innerHTML='<span class="l">'+c.l+'</span><span class="t">('+frHtml(c.fr)+(c.ar?'<span class="ar">'+c.ar+'</span>':'')+')</span>'+(IC[c.ic]||"");
     ch.appendChild(d);anim(d,{opacity:0,transform:"translateY(14px)"},160+k*70,520)});
   anim($("t"),{opacity:0,transform:"translateX("+x+"px)"},0,460);
-  anim($("p"),{opacity:0,transform:"translateX("+x+"px)"},70,500);
+  anim(pb,{opacity:0,transform:"translateX("+x+"px)"},70,500);
   if(s.sc)anim($("scene"),{opacity:0,transform:"scale(.9)"},40,520);
   anim(code,{opacity:.4,transform:"translateX("+x+"px)"},0,420);
   Array.prototype.forEach.call(bar.children,function(e,k){e.className=k<=i?"done":""});
   $("count").textContent=(i+1)+" / "+S.length;
   $("prev").disabled=i===0;$("next").disabled=i===S.length-1;
+  window.scrollTo(0,0);
 }
-function setPlay(on,label){playing=on;$("pl").textContent=label;$("ico").innerHTML=on?'<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>':'<path d="M7 4.5v15l13-7.5z"/>'}
-function stopSpeech(){tok++;clearTimeout(tm);try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}}
-function go(n){var d=n>i?1:-1;stopSpeech();i=Math.max(0,Math.min(S.length-1,n));render(d);if(playing)say()}
-function voice(l){return speechSynthesis.getVoices().filter(function(x){return x.lang&&x.lang.toLowerCase().indexOf(l)===0})[0]}
-function say(){
-  var my=++tok,text=S[i].t+". "+S[i].p;
-  function done(){if(my!==tok||!playing)return;clearTimeout(tm);if(i<S.length-1){i++;render(1);say()}else setPlay(false,"إعادة التشغيل")}
-  tm=setTimeout(done,text.length*120+4000);
-  try{
-    var parts=text.split(/([A-Za-zÀ-ÿ0-9][A-Za-zÀ-ÿ0-9’'\-]*(?:\s[A-Za-zÀ-ÿ0-9’'\-]+)*)/).filter(function(x){return x&&x.trim()});
-    var k=0;
-    (function next(){
-      if(my!==tok)return;
-      if(k>=parts.length){clearTimeout(tm);tm=setTimeout(done,700);return}
-      var x=parts[k++],fr=/[A-Za-zÀ-ÿ]/.test(x),u=new SpeechSynthesisUtterance(x);
-      u.lang=fr?"fr-FR":"ar-SA";u.rate=.9;var v=voice(fr?"fr":"ar");if(v)u.voice=v;
-      u.onend=next;u.onerror=next;speechSynthesis.speak(u);
-    })();
-  }catch(e){}
-}
-function toggle(){
-  if(playing){setPlay(false,"متابعة");stopSpeech();return}
-  if($("pl").textContent==="إعادة التشغيل"){i=0;render(-1)}
-  setPlay(true,"إيقاف مؤقت");say();
-}
-$("play").onclick=toggle;$("next").onclick=function(){go(i+1)};$("prev").onclick=function(){go(i-1)};
-document.addEventListener("keydown",function(e){
-  if(e.key==="ArrowLeft")go(i+1);else if(e.key==="ArrowRight")go(i-1);else if(e.key===" "&&e.target.tagName!=="BUTTON"){e.preventDefault();toggle()}
-});
-function check(){
-  var n=$("note");
-  if(!("speechSynthesis"in window)){n.textContent="هذا المتصفح لا يدعم الصوت. افتح الصفحة في Chrome أو Safari، أو اقرأ بأزرار السابق والتالي.";return}
-  var a=voice("ar"),f=voice("fr");
-  n.textContent=(a?"صوت عربي متوفر. ":"لا يوجد صوت عربي على جهازك، ثبّته من إعدادات تحويل النص إلى كلام. ")+(f?"صوت فرنسي متوفر.":"لا يوجد صوت فرنسي، ثبّته أيضاً لنطق الكلمات الفرنسية.");
-}
-if("speechSynthesis"in window)speechSynthesis.onvoiceschanged=check;
-setTimeout(check,600);render(0);
+function go(n){var d=n>i?1:-1;i=Math.max(0,Math.min(S.length-1,n));render(d)}
+$("next").onclick=function(){go(i+1)};$("prev").onclick=function(){go(i-1)};
+document.addEventListener("keydown",function(e){if(e.key==="ArrowLeft")go(i+1);else if(e.key==="ArrowRight")go(i-1)});
+render(0);
 </script>
 </body>
 </html>
