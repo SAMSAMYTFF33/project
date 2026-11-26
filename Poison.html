@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>جريمة التسميم</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#101a2e; --card:#17243d; --side:#0b1323;
+  --title:#f2c66d;   /* العنوان الكبير */
+  --head:#5fd6c6;    /* العناوين الصغيرة */
+  --text:#e8ebf2;    /* الفقرات */
+  --line:#2b3b5c; --warn:#ffd640; --muted:#8e9bb3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Naskh Arabic',serif;font-size:19px;line-height:2.15;padding:0 16px 70px;
+  -webkit-text-size-adjust:100%;overflow-x:hidden;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--title);outline-offset:3px}
+.page{max-width:820px;margin:0 auto;padding-top:76px}
+
+/* زر القائمة أعلى اليسار */
+.menu-btn{position:fixed;top:14px;left:14px;z-index:30;width:44px;height:44px;border-radius:10px;
+  background:var(--card);border:1px solid var(--line);display:grid;place-content:center;gap:5px}
+.menu-btn span{display:block;width:20px;height:2px;background:var(--title);border-radius:2px}
+.menu-btn:hover{border-color:var(--title)}
+
+/* الشريط الجانبي (يسار) */
+.side{position:fixed;top:0;left:0;bottom:0;width:290px;max-width:85vw;z-index:40;background:var(--side);
+  border-right:1px solid var(--line);padding:70px 16px 20px;transform:translateX(-100%);transition:transform .25s}
+.side.open{transform:none;box-shadow:8px 0 30px rgba(0,0,0,.5)}
+.side h3{font-family:'Amiri',serif;color:var(--title);font-size:1.3rem;margin-bottom:12px}
+.side .home{display:block;color:var(--muted);text-decoration:none;margin:-4px 0 14px;font-size:.95rem}
+.side .home:hover{color:var(--head)}
+.side button.item{width:100%;display:block;text-align:right;background:var(--card);color:var(--text);
+  border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin-bottom:10px;line-height:1.6}
+.side button.item b{display:block;font-family:'Amiri',serif;font-size:1.25rem;font-weight:700}
+.side button.item small{display:block;color:var(--muted);font-size:.8rem;direction:ltr;text-align:right;font-family:system-ui,sans-serif}
+.side button.item:hover{border-color:var(--head)}
+.side button.item.active{border-color:var(--head);background:#14354a}
+.side button.item.active b{color:var(--head)}
+.close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--line);color:var(--text);
+  border-radius:8px;width:38px;height:38px}
+.shade{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:35}
+.shade[hidden]{display:none}
+
+/* المحتوى */
+h1{font-family:'Amiri',serif;font-size:clamp(2rem,7vw,3rem);color:var(--title);line-height:1.6;
+  padding:6px 0 12px;margin-bottom:22px;border-bottom:3px solid var(--title)}
+.panel[hidden]{display:none}
+.block{background:var(--card);border:1px solid var(--line);border-inline-start:5px solid var(--head);border-radius:14px;padding:18px 24px;margin-bottom:16px;overflow-wrap:break-word;word-break:normal}
+h2{font-family:'Amiri',serif;font-size:1.45rem;color:var(--head);line-height:1.7;margin-bottom:4px}
+p{color:#dfe4ee;margin-bottom:10px;text-align:start;word-spacing:.06em}
+.block p:last-child{margin-bottom:0}
+.block.excuse{border-inline-start-color:var(--warn);background:#1c2640}
+.block.excuse h2{color:var(--warn)}
+.block.excuse .item{background:rgba(255,214,64,.09);border:1px solid rgba(255,214,64,.35);
+  border-inline-start:4px solid var(--warn);border-radius:10px;padding:8px 14px;margin-top:10px;color:#fff6d6}
+
+.h{color:var(--head);font-family:'Amiri',serif;font-weight:700;font-size:1.3rem}
+.excuse{background:rgba(255,224,102,.09);border:1px solid rgba(255,224,102,.35);border-inline-start:4px solid #ffe066;
+  border-radius:10px;padding:8px 14px;margin-bottom:10px;color:#ffe066;font-weight:500}
+.block p.excuse:last-child{margin-bottom:0}
+.soon{color:var(--muted);text-align:center;padding:30px 0}
+@media (max-width:600px){
+  body{font-size:17.5px;line-height:2.05;padding:0 10px 60px}
+  .page{padding-top:68px}
+  h1{font-size:1.9rem;margin-bottom:16px}
+  h2{font-size:1.25rem}
+  .block{padding:14px 14px;margin-bottom:12px;border-radius:12px;border-inline-start-width:4px}
+  .h{font-size:1.15rem}
+}
+@media print{body{display:none}}
+@media (prefers-reduced-motion:reduce){.side{transition:none}}
+</style>
+</head>
+<body>
+
+<button class="menu-btn" id="menuBtn" type="button" aria-label="فتح القائمة" aria-controls="side" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+
+<div class="shade" id="shade" hidden></div>
+
+<aside class="side" id="side" aria-label="القائمة الجانبية">
+  <button class="close" id="closeBtn" type="button" aria-label="إغلاق">✕</button>
+  <h3>القانون الجنائي</h3>
+  <a class="home" href="penal.html">← الرئيسية</a>
+  <button class="item" data-href="Meurtre.html" type="button"><b>القتل العمد</b><small>Meurtre.html</small></button>
+  <button class="item" data-target="khata" type="button"><b>القتل الخطأ</b><small>Homicide-involontaire.html</small></button>
+  <button class="item active" data-target="tasmim" type="button"><b>التسميم</b><small>Poison.html</small></button>
+</aside>
+
+<main class="page">
+  <h1 id="pageTitle">جريمة التسميم</h1>
+
+  <!-- التسميم -->
+  <section class="panel" id="tasmim">
+    <div class="block">
+      <h2>جريمة التسميم  :</h2>
+      <p>تُعد جريمة التسميم من الجرائم التي خصّها المشرع الجنائي المغربي بتنظيم مستقل، حيث نص عليها الفصل 398 ق.ج، معاقباً بالإعدام كل من اعتدى على حياة شخص بواسطة مواد من شأنها أن تسبب الموت عاجلاً أو آجلاً، أياً كانت طريقة استعمالها أو النتيجة المترتبة عنها، دون اشتراط تحقق وفاة المجني عليه.</p>
+    </div>
+  </section>
+
+  <!-- القتل الخطأ -->
+  <section class="panel" id="khata" hidden>
+    <div class="block"><p class="soon">سيضاف المحتوى لاحقا.</p></div>
+  </section>
+</main>
+
+<script>
+const side = document.getElementById('side');
+const shade = document.getElementById('shade');
+const menuBtn = document.getElementById('menuBtn');
+const titles = {tasmim:'جريمة التسميم', khata:'القتل الخطأ'};
+
+function setMenu(open){
+  side.classList.toggle('open', open);
+  shade.hidden = !open;
+  menuBtn.setAttribute('aria-expanded', open);
+}
+menuBtn.addEventListener('click', () => setMenu(true));
+document.getElementById('closeBtn').addEventListener('click', () => setMenu(false));
+shade.addEventListener('click', () => setMenu(false));
+document.addEventListener('keydown', e => { if(e.key === 'Escape') setMenu(false); });
+
+function show(id){
+  document.querySelectorAll('.panel').forEach(p => p.hidden = p.id !== id);
+  document.querySelectorAll('.side .item').forEach(b => b.classList.toggle('active', b.dataset.target === id));
+  document.getElementById('pageTitle').textContent = titles[id];
+  window.scrollTo(0, 0);
+  setMenu(false);
+}
+document.querySelectorAll('.side .item').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.href) { location.href = b.dataset.href; } else { show(b.dataset.target); }
+}));
+
+/* منع النسخ */
+['contextmenu','copy','cut','dragstart','selectstart'].forEach(ev =>
+  document.addEventListener(ev, e => e.preventDefault()));
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','u','s','p'].includes(k)) e.preventDefault();
+});
+</script>
+</body>
+</html>
