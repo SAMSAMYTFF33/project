@@ -90,7 +90,7 @@ p{color:#dfe4ee;margin-bottom:10px;text-align:start;word-spacing:.06em}
   <a class="home" href="penal.html">← الرئيسية</a>
   <button class="item active" data-target="amd" type="button"><b>القتل العمد</b><small>Meurtre.html</small></button>
   <button class="item" data-target="khata" type="button"><b>القتل الخطأ</b><small>Homicide-involontaire.html</small></button>
-  <button class="item" data-target="tasmim" type="button"><b>التسميم</b><small>Empoisonnement.html</small></button>
+  <button class="item" data-href="Poison.html" type="button"><b>التسميم</b><small>Poison.html</small></button>
 </aside>
 
 <main class="page">
@@ -194,17 +194,13 @@ p{color:#dfe4ee;margin-bottom:10px;text-align:start;word-spacing:.06em}
     <div class="block"><p class="soon">سيضاف المحتوى لاحقا.</p></div>
   </section>
 
-  <!-- التسميم -->
-  <section class="panel" id="tasmim" hidden>
-    <div class="block"><p class="soon">سيضاف المحتوى لاحقا.</p></div>
-  </section>
 </main>
 
 <script>
 const side = document.getElementById('side');
 const shade = document.getElementById('shade');
 const menuBtn = document.getElementById('menuBtn');
-const titles = {amd:'القتل العمد', khata:'القتل الخطأ', tasmim:'التسميم'};
+const titles = {amd:'القتل العمد', khata:'القتل الخطأ'};
 
 function setMenu(open){
   side.classList.toggle('open', open);
@@ -223,7 +219,9 @@ function show(id){
   window.scrollTo(0, 0);
   setMenu(false);
 }
-document.querySelectorAll('.side .item').forEach(b => b.addEventListener('click', () => show(b.dataset.target)));
+document.querySelectorAll('.side .item').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.href) { location.href = b.dataset.href; } else { show(b.dataset.target); }
+}));
 
 /* منع النسخ */
 ['contextmenu','copy','cut','dragstart','selectstart'].forEach(ev =>
