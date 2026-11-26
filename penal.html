@@ -1,1 +1,229 @@
-.
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>القانون الجنائي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef0f3; --surface:#ffffff; --ink:#1b2a41; --text:#2b3445; --muted:#6a7486;
+  --brass:#a8802f; --brass-soft:#f4ecdb; --line:#d9dee6; --wine:#7a2e3b; --wine-soft:#f6e9ec;
+  --hero:#16243a; --hero-text:#f3efe6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1724; --surface:#17223a; --ink:#f1ede3; --text:#d3d9e4; --muted:#93a0b6;
+    --brass:#d1a954; --brass-soft:#2a2a2a; --line:#2a3752; --wine:#e08b99; --wine-soft:#2f2030;
+    --hero:#0b1220; --hero-text:#f3efe6;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Naskh Arabic',serif;background:var(--bg);color:var(--text);line-height:2;font-size:18px;min-height:100vh}
+h1,h2,h3{font-family:'Amiri',serif;color:var(--ink);line-height:1.5}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
+.view[hidden]{display:none}
+
+/* ---------- الصفحة الرئيسية ---------- */
+.home{min-height:100vh;display:grid;place-items:center;padding:32px 20px;background:var(--hero);
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 64px)}
+.home-inner{max-width:560px;width:100%;text-align:center;color:var(--hero-text)}
+.home-inner h1{color:var(--hero-text);font-size:clamp(2rem,6vw,2.8rem);margin-bottom:8px}
+.home-inner p{color:#b8c0cf;margin-bottom:36px}
+.module-btn{width:100%;display:flex;align-items:center;gap:18px;text-align:right;padding:22px 26px;
+  background:var(--hero-text);color:#16243a;border:0;border-radius:14px;
+  border-inline-start:8px solid var(--brass);transition:transform .2s,box-shadow .2s}
+.module-btn:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.module-btn .ico{font-size:2.2rem;line-height:1}
+.module-btn strong{display:block;font-family:'Amiri',serif;font-size:1.7rem;line-height:1.4}
+.module-btn span{font-size:.95rem;color:#5a6477}
+
+/* ---------- صفحة الوحدة ---------- */
+.topbar{position:sticky;top:0;z-index:10;background:var(--hero);color:var(--hero-text);
+  display:flex;align-items:center;gap:14px;padding:12px 20px;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.back{background:transparent;color:var(--hero-text);border:1px solid rgba(255,255,255,.3);
+  border-radius:999px;padding:4px 16px;font-size:.95rem}
+.back:hover{background:rgba(255,255,255,.12)}
+.topbar b{font-family:'Amiri',serif;font-size:1.2rem}
+
+.wrap{max-width:860px;margin:0 auto;padding:36px 20px 80px}
+.title{margin-bottom:28px}
+.title h1{font-size:clamp(1.9rem,5vw,2.6rem)}
+.title p{color:var(--muted)}
+
+.quote{background:var(--hero);color:var(--hero-text);border-radius:14px;padding:26px 30px;margin-bottom:28px;
+  border-inline-start:8px solid var(--brass)}
+.quote small{display:block;color:var(--brass);font-weight:700;margin-bottom:4px;font-family:'Amiri',serif;font-size:1.1rem}
+.quote p{font-family:'Amiri',serif;font-size:1.5rem;line-height:1.9}
+
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:34px}
+.pillar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+.pillar h3{font-size:1.3rem;margin-bottom:6px}
+.pillar.mat{border-top:5px solid var(--brass)}
+.pillar.mor{border-top:5px solid var(--wine)}
+.pillar p{font-size:1rem;line-height:1.9}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px}
+.chips a{text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);
+  border-radius:999px;padding:2px 16px;font-size:.95rem}
+.chips a:hover{border-color:var(--brass);background:var(--brass-soft)}
+
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 28px;margin-bottom:20px;scroll-margin-top:80px}
+section h2{font-size:1.65rem;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--brass)}
+section h3{font-size:1.25rem;margin:18px 0 6px}
+section p{margin-bottom:10px}
+.law{color:var(--brass);font-weight:700}
+
+.elements{list-style:none;display:grid;gap:10px;margin:14px 0}
+.elements li{background:var(--brass-soft);border-radius:10px;padding:10px 16px;border-inline-start:5px solid var(--brass)}
+.elements li b{color:var(--ink)}
+
+.example{background:var(--wine-soft);border-radius:10px;padding:12px 18px;margin:12px 0;border-inline-start:5px solid var(--wine)}
+.example b{color:var(--wine)}
+
+.note{background:var(--brass-soft);border-radius:10px;padding:12px 18px;margin:12px 0}
+.note b{color:var(--ink)}
+
+@media (max-width:640px){
+  body{font-size:17px}
+  .pillars{grid-template-columns:1fr}
+  section{padding:20px 18px}
+  .quote{padding:20px}
+  .quote p{font-size:1.25rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- الصفحة الرئيسية -->
+<main id="home" class="view home">
+  <div class="home-inner">
+    <h1>المقررات الدراسية</h1>
+    <p>اختر المادة لعرض الدروس</p>
+    <button class="module-btn" id="openLaw" type="button">
+      <span class="ico" aria-hidden="true">⚖️</span>
+      <div>
+        <strong>القانون الجنائي</strong>
+        <span>أركان جريمة القتل العمد – الفصل 392</span>
+      </div>
+    </button>
+  </div>
+</main>
+
+<!-- صفحة المادة -->
+<div id="law" class="view" hidden>
+  <header class="topbar">
+    <button class="back" id="backBtn" type="button">← رجوع</button>
+    <b>القانون الجنائي</b>
+  </header>
+
+  <article class="wrap">
+    <div class="title">
+      <h1>أركان جريمة القتل العمد</h1>
+      <p>الفصل 392 من القانون الجنائي المغربي</p>
+    </div>
+
+    <blockquote class="quote">
+      <small>الفصل 392</small>
+      <p>«كل من تسبب عمدا في قتل غيره يعد قاتلا».</p>
+    </blockquote>
+
+    <div class="pillars">
+      <div class="pillar mat">
+        <h3>الركن المادي</h3>
+        <p>التسبب في إزهاق روح المجني عليه.</p>
+      </div>
+      <div class="pillar mor">
+        <h3>الركن المعنوي</h3>
+        <p>توافر القصد الجنائي ونية القتل، وهو العنصر الذي يميز القتل العمد عن القتل غير العمد.</p>
+      </div>
+    </div>
+
+    <nav class="chips" aria-label="فهرس الدرس">
+      <a href="#s1">الركن المادي</a>
+      <a href="#s2">طبيعة النشاط</a>
+      <a href="#s3">التنفيذ بواسطة الغير</a>
+      <a href="#s4">الوسائل المعدة مسبقا</a>
+      <a href="#s5">الأفعال المعنوية</a>
+    </nav>
+
+    <section id="s1">
+      <h2>الركن المادي</h2>
+      <p>تقوم جريمة القتل العمد على ركنين أساسيين: ركن مادي وركن معنوي. ويتكون الركن المادي من ثلاثة عناصر:</p>
+      <ul class="elements">
+        <li><b>النشاط:</b> نشاط يصدر عن الجاني.</li>
+        <li><b>النتيجة الإجرامية:</b> إزهاق روح المجني عليه.</li>
+        <li><b>علاقة السببية:</b> رابطة تصل بين نشاط الجاني والوفاة.</li>
+      </ul>
+      <h3>نشاط صادر عن الجاني</h3>
+      <p>لا يعاقب القانون على مجرد النوايا والأفكار الإجرامية مهما كانت خطيرة ما دامت حبيسة ذهن صاحبها، وإنما يشترط ترجمتها إلى نشاط مادي خارجي.</p>
+      <div class="note">
+        <b>إذا أدى النشاط إلى الوفاة:</b> قامت جريمة القتل العمد.<br>
+        <b>إذا بقي المجني عليه حيا:</b> قد نكون أمام <b>محاولة قتل</b> متى توافرت شروط الشروع المنصوص عليها في <span class="law">الفصل 114</span> من القانون الجنائي.
+      </div>
+    </section>
+
+    <section id="s2">
+      <h2>طبيعة النشاط الإجرامي</h2>
+      <p>لم يحدد المشرع المغربي وسيلة معينة لارتكاب القتل العمد، بل اعتبر كل نشاط يصدر عن الجاني بقصد إزهاق روح إنسان صالحا لتكوين الركن المادي، سواء استعمل سلاحا أو سما أو وسيلة أخرى.</p>
+      <div class="note">
+        <b>قاعدة:</b> يمكن أن تتحقق الجريمة بوسائل غير قاتلة بطبيعتها، إذا أدت إلى الوفاة وثبتت نية القتل.
+      </div>
+    </section>
+
+    <section id="s3">
+      <h2>تنفيذ القتل بواسطة الغير أو المجني عليه</h2>
+      <p>لا يشترط أن ينفذ الجاني النشاط الإجرامي بنفسه.</p>
+      <div class="example">
+        <b>مثال 1:</b> شخص يقنع آخر بلمس جهاز كهربائي بحجة أنه آمن، فيصعقه التيار.
+      </div>
+      <div class="example">
+        <b>مثال 2:</b> استغلال شخص مجنون وإعطاؤه سلاحا لإطلاق النار على الضحية، أي التنفيذ بواسطة شخص آخر.
+      </div>
+    </section>
+
+    <section id="s4">
+      <h2>الوسائل المعدة مسبقا</h2>
+      <p>يتحقق النشاط الإجرامي كذلك باستعمال وسائل أعدها الجاني مسبقا، كحفر حفرة أو وضع متفجرات لاستهداف ضحية.</p>
+      <div class="note">
+        <b>الشرط:</b> إذا أدت هذه الوسائل إلى الوفاة مع توافر نية القتل قامت الجريمة.
+      </div>
+    </section>
+
+    <section id="s5">
+      <h2>الأفعال المعنوية المؤدية إلى القتل</h2>
+      <p>الأفعال المعنوية هي التي تستهدف نفسية الضحية وأعصابها.</p>
+      <div class="example">
+        <b>مثال 1:</b> إساءة الزوج معاملة زوجته بقصد قتلها حتى تنتحر.
+      </div>
+      <div class="example">
+        <b>مثال 2:</b> مفاجأة مريض بالقلب بخبر سيئ ليموت.
+      </div>
+      <h3>الآراء الفقهية</h3>
+      <ul class="elements">
+        <li><b>رأي أول:</b> لا تكون ركنا ماديا، لصعوبة إثبات السببية.</li>
+        <li><b>الرأي الغالب:</b> مساءلة الجاني عنها إذا تعمد إزهاق الروح.</li>
+      </ul>
+    </section>
+  </article>
+</div>
+
+<script>
+const home = document.getElementById('home');
+const law = document.getElementById('law');
+
+function show(view){
+  home.hidden = view !== 'home';
+  law.hidden = view !== 'law';
+  window.scrollTo(0, 0);
+}
+document.getElementById('openLaw').addEventListener('click', () => show('law'));
+document.getElementById('backBtn').addEventListener('click', () => show('home'));
+</script>
+</body>
+</html>
